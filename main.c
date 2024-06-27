@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     atexit(cleanup_SDL);
 
     while(1) {
-        prepare_scene();
+        prepare_scene(0, 0, 0, 255);
         catch_input();
         present_scene();
         SDL_Delay(16);
