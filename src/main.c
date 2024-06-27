@@ -1,7 +1,7 @@
 #include "structs.h"
-#include "draw.h"
-#include "init.h"
-#include "input.h"
+#include "wrap_sdl/draw.h"
+#include "wrap_sdl/init.h"
+#include "wrap_sdl/input.h"
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 

@@ -1,5 +1,5 @@
-#include "defs.h"
-#include "structs.h"
+#include "../defs.h"
+#include "../structs.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
@@ -16,12 +16,17 @@ void init_SDL() {
         exit(1); // exit w/ error
     }
 
-    app.window = SDL_CreateWindow("This is a window", SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                                  SCREEN_HEIGHT, windowFlags);
+    app.window = SDL_CreateWindow("This is a window",
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SCREEN_WIDTH,
+                                  SCREEN_HEIGHT,
+                                  windowFlags);
     if (!app.window) {
-        printf("Failed to open %d x %d window with error: %s\n", SCREEN_WIDTH,
-               SCREEN_HEIGHT, SDL_GetError());
+        printf("Failed to open %d x %d window with error: %s\n",
+               SCREEN_WIDTH,
+               SCREEN_HEIGHT,
+               SDL_GetError());
         exit(1);
     }
 
@@ -33,6 +38,4 @@ void init_SDL() {
     }
 }
 
-void cleanup_SDL() {
-    SDL_Quit();
-}
+void cleanup_SDL() { SDL_Quit(); }
