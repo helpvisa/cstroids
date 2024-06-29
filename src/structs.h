@@ -3,10 +3,18 @@
 #ifndef STRUCTS_H_
 #define STRUCTS_H_
 
+// keys and inputs
+typedef struct {
+    int left;
+    int right;
+    int up;
+    int shoot;
+} InputMap;
+
 // math
 typedef struct {
-    int x;
-    int y;
+    float x;
+    float y;
 } Vector2;
 
 // rendering
@@ -26,7 +34,7 @@ typedef struct {
 typedef struct {
     Vector2 pos;
     Vector2 speed;
-    int angle;
+    float angle;
     Vector2 *offsets;
     int offset_count;
 } Ship;

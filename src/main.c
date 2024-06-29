@@ -1,4 +1,6 @@
+#include "defs.h"
 #include "structs.h"
+#include "objects/ship.h"
 #include "wrap_sdl/draw.h"
 #include "wrap_sdl/init.h"
 #include "wrap_sdl/input.h"
@@ -13,10 +15,22 @@ int main(int argc, char *argv[]) {
     init_SDL();
     atexit(cleanup_SDL);
 
+    // create a ship
+    Vector2 init_pos = {SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0};
+    Vector2 test_offsets[] = {
+        {-10, 10},
+        {10, 10},
+        {0, -10}
+    };
+    Ship testship = init_ship(init_pos, test_offsets, 3);
+
     while(1) {
-        // setup the bg and parse inputs
+        // seTup the bg and parse inputs
         prepare_scene(0, 0, 0, 255);
-        catch_input();
+        update_input();
+
+        update_ship(&testship);
+        draw_ship(&testship);
 
         // present the final rendered scene
         // at a fixed rate of ~62fps
