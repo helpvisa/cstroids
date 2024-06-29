@@ -1,7 +1,8 @@
 #ifndef DEFS_H_
 #define DEFS_H_
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define DEFAULT_RATIO 1.77777
+#define DEFAULT_SCREEN_WIDTH 1280
+#define DEFAULT_SCREEN_HEIGHT 720
 
 #endif

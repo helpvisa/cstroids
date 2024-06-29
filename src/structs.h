@@ -33,10 +33,30 @@ typedef struct {
 // objects
 typedef struct {
     Vector2 pos;
-    Vector2 speed;
-    float angle;
+    Vector2 velocity;
+    float max_velocity;
+    float speed;
+    float angle; // in degrees
+    float rot_speed;
     Vector2 *offsets;
     int offset_count;
 } Ship;
+
+typedef struct {
+    Vector2 pos;
+    Vector2 velocity;
+    int lifetime;
+    int life;
+    Colour col;
+} Particle;
+
+typedef struct {
+    Vector2 pos;
+    Vector2 velocity;
+    float size;
+    float rotation_speed; // in degrees per second
+    Vector2 *offsets;
+    int offset_count;
+} Asteroid;
 
 #endif

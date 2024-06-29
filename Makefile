@@ -1,5 +1,5 @@
 main: assemble
-	cc -Wall -O2 -o ./sdl-bin ./build/*.o -lSDL2
+	cc -Wall -O2 -o ./sdl-bin ./build/*.o -lSDL2 -lm
 
 assemble:
 	mkdir -p ./build/
