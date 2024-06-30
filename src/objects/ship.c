@@ -1,11 +1,11 @@
 #include "../defs.h"
 #include "../structs.h"
 #include "../wrap_sdl/draw.h"
+#include "particle.h"
 #include <math.h>
 
-#define PI 3.1415926535
-
 extern InputMap inputmap;
+extern struct ParticleNode *particles_head;
 
 extern float zoom_x;
 extern float zoom_y;
@@ -27,6 +27,7 @@ void update_ship(Ship *ship) {
     float c = cos(angle_rad);
 
     if (inputmap.up) {
+        // activate thrusters
         ship->velocity.x += c * ship->speed;
         ship->velocity.y += s * ship->speed;
         // clamp speed
@@ -40,6 +41,12 @@ void update_ship(Ship *ship) {
         } else if (ship->velocity.y < -ship->max_velocity) {
             ship->velocity.y = -ship->max_velocity;
         }
+        // create engine particles
+        Colour col = {255, 150, 0, 255};
+        Vector2 part_origin = {ship->pos.x, ship->pos.y};
+        Vector2 part_vel = {c * 10, s * 10};
+        Particle *new_part = create_particle(part_origin, part_vel, 180, col);
+        insert_particle_at_end(&particles_head, new_part);
     }
     if (inputmap.left) {
         ship->angle -= ship->rot_speed;

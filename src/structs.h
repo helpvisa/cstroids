@@ -50,6 +50,11 @@ typedef struct {
     Colour col;
 } Particle;
 
+struct ParticleNode {
+    Particle *part;
+    struct ParticleNode *next;
+};
+
 typedef struct {
     Vector2 pos;
     Vector2 velocity;
@@ -58,5 +63,10 @@ typedef struct {
     Vector2 *offsets;
     int offset_count;
 } Asteroid;
+
+struct AsteroidNode {
+    Asteroid *roid;
+    struct AsteroidNode *next;
+};
 
 #endif

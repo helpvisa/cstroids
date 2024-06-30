@@ -1,10 +1,11 @@
 #include "../defs.h"
 #include "../structs.h"
+#include "../globals.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-App app = {NULL, NULL};
+extern App app;
 
 void init_SDL(char *window_title) {
     int rendererFlags, windowFlags;

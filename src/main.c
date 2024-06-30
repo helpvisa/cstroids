@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "structs.h"
+#include "objects/particle.h"
 #include "objects/ship.h"
 #include "wrap_sdl/draw.h"
 #include "wrap_sdl/init.h"
@@ -8,6 +9,7 @@
 #include <stdlib.h>
 
 extern App app;
+extern struct ParticleNode *particles_head;
 
 int main(int argc, char *argv[]) {
     memset(&app, 0, sizeof(App));
@@ -24,22 +26,30 @@ int main(int argc, char *argv[]) {
     };
     Ship testship = init_ship(init_pos, test_offsets, 3);
 
+    int last_ticks = SDL_GetTicks();
     while(1) {
-        // seTup the bg and parse inputs
+        // wait for fixed timestep
+        if (SDL_GetTicks() - last_ticks < 1000 / DESIRED_FPS) {
+            continue;
+        }
+        last_ticks = SDL_GetTicks();
+
+        // setup the bg and parse inputs
         prepare_scene(0, 0, 0, 255);
         update_input();
 
         // update entities
         update_ship(&testship);
+        update_particle_list(&particles_head);
 
         // draw objects
         update_window();
         draw_ship(&testship);
+        draw_particle_list(&particles_head);
 
         // present the final rendered scene
         // at a fixed rate of ~62fps
         present_scene();
-        SDL_Delay(16);
     }
 
     return 0;

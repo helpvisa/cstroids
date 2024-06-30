@@ -34,6 +34,17 @@ void update_window() {
     /* } */
 }
 
+void render_point(Vector2 point, Colour col) {
+    if (SDL_SetRenderDrawColor(app.renderer, col.r, col.g, col.b, col.a) < 0) {
+        printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
+        exit(1);
+    }
+    if (SDL_RenderDrawPointF(app.renderer, point.x, point.y) < 0) {
+        printf("Couldn't render point with error: %s\n", SDL_GetError());
+        exit(1);
+    }
+}
+
 void render_line(int x1, int y1, int x2, int y2, Colour col) {
     if (SDL_SetRenderDrawColor(app.renderer, col.r, col.g, col.b, col.a) < 0) {
         printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
