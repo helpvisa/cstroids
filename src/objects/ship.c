@@ -1,5 +1,6 @@
 #include "../defs.h"
 #include "../structs.h"
+#include "../rng.h"
 #include "../wrap_sdl/draw.h"
 #include "particle.h"
 #include <math.h>
@@ -7,11 +8,7 @@
 extern InputMap inputmap;
 extern struct ParticleNode *particles_head;
 
-extern float zoom_x;
-extern float zoom_y;
 extern float ratio;
-extern int screen_width;
-extern int screen_height;
 
 Ship init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     Vector2 zero = {0, 0};
@@ -43,8 +40,10 @@ void update_ship(Ship *ship) {
         }
         // create engine particles
         Colour col = {255, 150, 0, 255};
-        Vector2 part_origin = {ship->pos.x, ship->pos.y};
-        Vector2 part_vel = {c * 10, s * 10};
+        float x_rand = (float)rng(10, 0) / 10;
+        float y_rand = (float)rng(10, 0) / 10;
+        Vector2 part_origin = {ship->pos.x + c * -10 + x_rand * 2, ship->pos.y + s * -10 + y_rand * 2};
+        Vector2 part_vel = {c * -4 + x_rand, s * -4 + y_rand};
         Particle *new_part = create_particle(part_origin, part_vel, 180, col);
         insert_particle_at_end(&particles_head, new_part);
     }
@@ -88,8 +87,8 @@ void update_ship(Ship *ship) {
 void draw_ship(Ship *ship) {
     Vector2 points[ship->offset_count + 1];
     for (int i = 0; i < ship->offset_count; i++) {
-        Vector2 global_point_position = {(ship->pos.x + ship->offsets[i].x) * zoom_x,
-                                         (ship->pos.y + ship->offsets[i].y) * zoom_y};
+        Vector2 global_point_position = {ship->pos.x + ship->offsets[i].x,
+                                         ship->pos.y + ship->offsets[i].y};
         points[i] = global_point_position;
     }
     // duplicate first point to close the poly

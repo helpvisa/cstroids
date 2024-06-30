@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "structs.h"
+#include "rng.h"
 #include "objects/particle.h"
 #include "objects/ship.h"
 #include "wrap_sdl/draw.h"
@@ -16,6 +17,9 @@ int main(int argc, char *argv[]) {
 
     init_SDL("CStroids");
     atexit(cleanup_SDL);
+
+    // initialize random number generator
+    init_rng();
 
     // create a ship
     Vector2 init_pos = {DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0};

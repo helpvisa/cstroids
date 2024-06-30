@@ -35,22 +35,37 @@ void update_window() {
 }
 
 void render_point(Vector2 point, Colour col) {
+    // create a rectangle
+    Vector2 render_point = {point.x * zoom_x, point.y * zoom_y};
+
+    if (SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_BLEND) < 0) {
+        printf("Couldn't set blend mode with error: %s\n", SDL_GetError());
+        exit(1);
+    }
     if (SDL_SetRenderDrawColor(app.renderer, col.r, col.g, col.b, col.a) < 0) {
         printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
         exit(1);
     }
-    if (SDL_RenderDrawPointF(app.renderer, point.x, point.y) < 0) {
+    if (SDL_RenderDrawPointF(app.renderer, render_point.x, render_point.y) < 0) {
         printf("Couldn't render point with error: %s\n", SDL_GetError());
         exit(1);
     }
 }
 
 void render_line(int x1, int y1, int x2, int y2, Colour col) {
+    // apply scaling
+    Vector2 point1 = {x1 * zoom_x, y1 * zoom_y};
+    Vector2 point2 = {x2 * zoom_x, y2 * zoom_y};
+   
+    if (SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_NONE) < 0) {
+        printf("Couldn't set blend mode with error: %s\n", SDL_GetError());
+        exit(1);
+    }
     if (SDL_SetRenderDrawColor(app.renderer, col.r, col.g, col.b, col.a) < 0) {
         printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
         exit(1);
     }
-    if (SDL_RenderDrawLineF(app.renderer, x1, y1, x2, y2) < 0) {
+    if (SDL_RenderDrawLineF(app.renderer, point1.x, point1.y, point2.x, point2.y) < 0) {
         printf("Couldn't render line with error: %s\n", SDL_GetError());
     }
 }
@@ -59,10 +74,14 @@ void render_polygon(Vector2 *vectors, int count, Colour col) {
     // convert vectors to points
     SDL_FPoint points[count];
     for (int i = 0; i < count; i++) {
-        SDL_FPoint point = {vectors[i].x, vectors[i].y};
+        SDL_FPoint point = {vectors[i].x * zoom_x, vectors[i].y * zoom_y};
         points[i] = point;
     }
 
+    if (SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_NONE) < 0) {
+        printf("Couldn't set blend mode with error: %s\n", SDL_GetError());
+        exit(1);
+    }
     if (SDL_SetRenderDrawColor(app.renderer, col.r, col.g, col.b, col.a) < 0) {
         printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
         exit(1);

@@ -1,13 +1,8 @@
 #include "../defs.h"
 #include "../structs.h"
 #include "../wrap_sdl/draw.h"
-#include <math.h>
 
-extern float zoom_x;
-extern float zoom_y;
 extern float ratio;
-extern float screen_width;
-extern float screen_height;
 
 Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour col) {
     Particle *part = malloc(sizeof(Particle));
@@ -47,13 +42,27 @@ void insert_particle_at_end(struct ParticleNode **head, Particle *part) {
 void update_particle(Particle *part) {
     part->pos.x += part->velocity.x;
     part->pos.y += part->velocity.y;
-    part->velocity.x *= 0.9;
-    part->velocity.y *= 0.9;
+    // wrap ship back across borders
+    if (part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
+        part->pos.x = -10;
+    } else if (part->pos.x < -10) {
+        part->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10;
+    }
+    if (part->pos.y > DEFAULT_SCREEN_HEIGHT + 10) {
+        part->pos.y = -10;
+    } else if (part->pos.y < -10) {
+        part->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
+    }
+    // friction
+    part->velocity.x *= 0.98;
+    part->velocity.y *= 0.98;
+    // decay
     part->life -= 1;
+    part->col.a *= ((float)part->life / part->lifetime);
 }
 
 void draw_particle(Particle *part) {
-    Vector2 point = {part->pos.x * zoom_x, part->pos.y * zoom_y};
+    Vector2 point = {part->pos.x, part->pos.y};
     render_point(point, part->col);
 }
 
