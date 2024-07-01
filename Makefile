@@ -2,7 +2,7 @@ OUTPUT=cstroids
 CC=cc
 
 main: assemble
-	cc -Wall ./build/*.o -o ./$(OUTPUT) -lSDL2 -lm
+	$(CC) -Wall ./build/*.o -o ./$(OUTPUT) -lSDL2 -lm
 
 assemble:
 	mkdir -p ./build
