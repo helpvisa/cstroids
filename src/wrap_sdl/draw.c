@@ -34,9 +34,18 @@ void update_window() {
     /* } */
 }
 
-void render_point(Vector2 point, Colour col) {
+void render_point(Vector2 point, Colour col, float size) {
     // create a rectangle
-    Vector2 render_point = {point.x * zoom_x, point.y * zoom_y};
+    float local_zoom_x = zoom_x;
+    if (local_zoom_x < 0.1) {
+        local_zoom_x = 0.1;
+    }
+    float local_zoom_y = zoom_y;
+    if (local_zoom_y < 0.1) {
+        local_zoom_y = 0.1;
+    }
+
+    const SDL_FRect rect = {(point.x - size / 2) * zoom_x, (point.y - size / 2) * zoom_y, local_zoom_x * size, local_zoom_y * size};
 
     if (SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_BLEND) < 0) {
         printf("Couldn't set blend mode with error: %s\n", SDL_GetError());
@@ -46,7 +55,7 @@ void render_point(Vector2 point, Colour col) {
         printf("Couldn't set draw colour with error: %s\n", SDL_GetError());
         exit(1);
     }
-    if (SDL_RenderDrawPointF(app.renderer, render_point.x, render_point.y) < 0) {
+    if (SDL_RenderFillRectF(app.renderer, &rect) < 0) {
         printf("Couldn't render point with error: %s\n", SDL_GetError());
         exit(1);
     }

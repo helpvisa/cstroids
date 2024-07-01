@@ -48,6 +48,7 @@ typedef struct {
     int lifetime;
     int life;
     Colour col;
+    float size;
 } Particle;
 
 struct ParticleNode {

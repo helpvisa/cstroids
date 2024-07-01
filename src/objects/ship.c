@@ -39,13 +39,22 @@ void update_ship(Ship *ship) {
             ship->velocity.y = -ship->max_velocity;
         }
         // create engine particles
-        Colour col = {255, 150, 0, 255};
-        float x_rand = (float)rng(10, 0) / 10;
-        float y_rand = (float)rng(10, 0) / 10;
-        Vector2 part_origin = {ship->pos.x + c * -10 + x_rand * 2, ship->pos.y + s * -10 + y_rand * 2};
-        Vector2 part_vel = {c * -4 + x_rand, s * -4 + y_rand};
-        Particle *new_part = create_particle(part_origin, part_vel, 180, col);
-        insert_particle_at_end(&particles_head, new_part);
+        for (int i = 0; i < 3; i++) {
+            float x_rand = (float)rng(10, 0) / 10;
+            float y_rand = (float)rng(10, 0) / 10;
+            float col_rand = (float)rng(60, 0);
+            Colour col = {255 - col_rand, 150 + col_rand, 0, 255};
+            Vector2 part_origin = {ship->pos.x + c * -10 + x_rand - 0.5,
+                                   ship->pos.y + s * -10 + y_rand - 0.5};
+            Vector2 part_vel = {ship->velocity.x + c * -8 + (x_rand - 0.5) * 2,
+                                ship->velocity.y + s * -8 + (y_rand - 0.5) * 2};
+            Particle *new_part = create_particle(part_origin,
+                                                 part_vel,
+                                                 60 + col_rand,
+                                                 col,
+                                                 col_rand / 10);
+            insert_particle_at_end(&particles_head, new_part);
+        }
     }
     if (inputmap.left) {
         ship->angle -= ship->rot_speed;

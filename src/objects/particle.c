@@ -2,15 +2,17 @@
 #include "../structs.h"
 #include "../wrap_sdl/draw.h"
 
+extern struct ParticleNode *particles_head;
 extern float ratio;
 
-Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour col) {
+Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour col, float size) {
     Particle *part = malloc(sizeof(Particle));
     part->pos = pos;
     part->velocity = velocity;
     part->lifetime = lifetime;
     part->life = lifetime;
     part->col = col;
+    part->size = size;
     return part;
 }
 
@@ -24,7 +26,7 @@ void insert_particle_at_beginning(struct ParticleNode **head, Particle *part) {
 void insert_particle_at_end(struct ParticleNode **head, Particle *part) {
     struct ParticleNode *new_node = malloc(sizeof(struct ParticleNode));
     new_node->part = part;
-    new_node->next= NULL;
+    new_node->next = NULL;
 
     if (*head == NULL) {
         *head = new_node;
@@ -39,59 +41,87 @@ void insert_particle_at_end(struct ParticleNode **head, Particle *part) {
     current->next = new_node;
 }
 
-void update_particle(Particle *part) {
-    part->pos.x += part->velocity.x;
-    part->pos.y += part->velocity.y;
-    // wrap ship back across borders
-    if (part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
-        part->pos.x = -10;
-    } else if (part->pos.x < -10) {
-        part->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10;
-    }
-    if (part->pos.y > DEFAULT_SCREEN_HEIGHT + 10) {
-        part->pos.y = -10;
-    } else if (part->pos.y < -10) {
-        part->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
-    }
-    // friction
-    part->velocity.x *= 0.98;
-    part->velocity.y *= 0.98;
-    // decay
-    part->life -= 1;
-    part->col.a *= ((float)part->life / part->lifetime);
-}
+void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode **ref) {
+    struct ParticleNode *current = *head, *prev;
 
-void draw_particle(Particle *part) {
-    Vector2 point = {part->pos.x, part->pos.y};
-    render_point(point, part->col);
-}
-
-void update_particle_list(struct ParticleNode **head) {
-    if (*head == NULL || (*head)->part == NULL) {
+    if (current != NULL && current->part == (*ref)->part) {
+        *ref = current->next;
+        *head = current->next;
+        free(current->part);
+        free(current);
         return;
     }
 
-    // update head
-    update_particle((*head)->part);
+    while (current != NULL && current->part != (*ref)->part) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (current == NULL) {
+        return;
+    }
+
+    prev->next = current->next;
+    *ref = prev;
+    free(current->part);
+    free(current);
+}
+
+void update_particle(struct ParticleNode **ref) {
+    (*ref)->part->pos.x += (*ref)->part->velocity.x;
+    (*ref)->part->pos.y += (*ref)->part->velocity.y;
+    // wrap ship back across borders
+    if ((*ref)->part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
+        (*ref)->part->pos.x = -10;
+    } else if ((*ref)->part->pos.x < -10) {
+        (*ref)->part->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10;
+    }
+    if ((*ref)->part->pos.y > DEFAULT_SCREEN_HEIGHT + 10) {
+        (*ref)->part->pos.y = -10;
+    } else if ((*ref)->part->pos.y < -10) {
+        (*ref)->part->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
+    }
+    // friction
+    (*ref)->part->velocity.x *= 0.95;
+    (*ref)->part->velocity.y *= 0.95;
+    // decay
+    (*ref)->part->life -= 1;
+    float decay = ((float)(*ref)->part->life / (*ref)->part->lifetime);
+    (*ref)->part->size *= decay;
+    if ((*ref)->part->life < 0) {
+        remove_particle_from_list(&particles_head, ref);
+    }
+}
+
+void draw_particle(struct ParticleNode *ref) {
+    Vector2 point = {ref->part->pos.x, ref->part->pos.y};
+    render_point(point, ref->part->col, ref->part->size);
+}
+
+void update_particle_list(struct ParticleNode **head) {
+    if (*head == NULL) {
+        return;
+    }
 
     // iterate through all particles in linked list
     struct ParticleNode *current = *head;
-    while (current->next != NULL) {
-        current = current->next;
-        update_particle(current->part);
+    while (current != NULL) {
+        update_particle(&current);
+        // a particle could have been removed; we must check again
+        if (current != NULL) {
+            current = current->next;
+        }
     }
 }
 
 void draw_particle_list(struct ParticleNode **head) {
-    if (*head == NULL || (*head)->part == NULL) {
+    if (*head == NULL) {
         return;
     }
 
-    draw_particle((*head)->part);
-
     struct ParticleNode *current = *head;
-    while (current->next != NULL) {
+    while (current != NULL) {
+        draw_particle(current);
         current = current->next;
-        draw_particle(current->part);
     }
 }
