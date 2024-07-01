@@ -1,5 +1,7 @@
+OUTPUT=cstroids
+
 main: assemble
-	cc -Wall ./build/*.o -o ./sdl-bin -lSDL2 -lm
+	cc -Wall ./build/*.o -o ./$(OUTPUT) -lSDL2 -lm
 
 assemble:
 	mkdir -p ./build

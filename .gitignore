@@ -12,3 +12,5 @@ build/
 
 # binaries
 sdl-bin
+cstroids
+*.exe
