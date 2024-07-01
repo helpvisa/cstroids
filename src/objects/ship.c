@@ -50,7 +50,7 @@ void update_ship(Ship *ship) {
                                 ship->velocity.y + s * -8 + (y_rand - 0.5) * 2};
             Particle *new_part = create_particle(part_origin,
                                                  part_vel,
-                                                 60 + col_rand,
+                                                 10 + col_rand,
                                                  col,
                                                  col_rand / 10);
             insert_particle_at_end(&particles_head, new_part);

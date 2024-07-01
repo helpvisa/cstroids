@@ -12,6 +12,6 @@ void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode *
 void update_particle(struct ParticleNode **ref);
 void draw_particle(struct ParticleNode *ref);
 void update_particle_list(struct ParticleNode **head);
-void draw_particle_list(struct ParticleNode **head);
+void draw_particle_list(struct ParticleNode *head);
 
 #endif

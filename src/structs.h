@@ -59,6 +59,7 @@ struct ParticleNode {
 typedef struct {
     Vector2 pos;
     Vector2 velocity;
+    float box_size;
     float size;
     float rotation_speed; // in degrees per second
     Vector2 *offsets;

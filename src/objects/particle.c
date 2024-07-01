@@ -70,7 +70,7 @@ void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode *
 void update_particle(struct ParticleNode **ref) {
     (*ref)->part->pos.x += (*ref)->part->velocity.x;
     (*ref)->part->pos.y += (*ref)->part->velocity.y;
-    // wrap ship back across borders
+    // wrap part back across borders
     if ((*ref)->part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
         (*ref)->part->pos.x = -10;
     } else if ((*ref)->part->pos.x < -10) {
@@ -114,12 +114,12 @@ void update_particle_list(struct ParticleNode **head) {
     }
 }
 
-void draw_particle_list(struct ParticleNode **head) {
-    if (*head == NULL) {
+void draw_particle_list(struct ParticleNode *head) {
+    if (head == NULL) {
         return;
     }
 
-    struct ParticleNode *current = *head;
+    struct ParticleNode *current = head;
     while (current != NULL) {
         draw_particle(current);
         current = current->next;
