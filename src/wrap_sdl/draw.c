@@ -1,6 +1,7 @@
 #include "../defs.h"
 #include "../structs.h"
 #include <SDL2/SDL_render.h>
+#include <stdio.h>
 
 extern App app;
 

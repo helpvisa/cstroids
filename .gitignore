@@ -10,7 +10,8 @@ __testing__/
 build/
 .vscode/
 
-# binaries
+# binaries and untracked dependencies
 sdl-bin
 cstroids
 *.exe
+*.dll
