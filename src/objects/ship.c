@@ -10,10 +10,20 @@ extern struct ParticleNode *particles_head;
 
 extern float ratio;
 
-Ship init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
+Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     Vector2 zero = {0, 0};
 
-    Ship ship = {pos, zero, 10, 0.03, 0, 3.5, offsets, offset_count};
+    /* Ship ship = {pos, zero, 10, 0.03, 0, 3.5, offsets, offset_count}; */
+    Ship *ship = malloc(sizeof(Ship));
+    ship->pos = pos;
+    ship->velocity = zero;
+    ship->offsets = offsets;
+    ship->offset_count = offset_count;
+    ship->max_velocity = 10;
+    ship->speed = 0.03;
+    ship->angle = 0;
+    ship->rot_speed = 3.5;
+
     return ship;
 }
 

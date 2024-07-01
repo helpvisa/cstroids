@@ -23,7 +23,6 @@ Asteroid *create_asteroid(Vector2 pos, Vector2 velocity, float size, float rot) 
     Asteroid *roid = malloc(sizeof(Asteroid));
     roid->pos = pos;
     roid->velocity = velocity;
-    roid->box_size = 20; // corresponds to our predefined offsets, sets bounding box
     roid->size = size;   // float multiplier for size
     roid->rotation_speed = rot;
     roid->offsets = roid_offsets;
@@ -35,6 +34,9 @@ Asteroid *create_asteroid(Vector2 pos, Vector2 velocity, float size, float rot) 
         float rand_y = ((float)rng(10, 0) / 10 - 0.5) * 8;
         roid->offsets[i].x += rand_x;
         roid->offsets[i].y += rand_y;
+        // apply size multiplier
+        roid->offsets[i].x *= roid->size;
+        roid->offsets[i].y *= roid->size;
     }
 
     return roid;

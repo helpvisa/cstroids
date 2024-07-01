@@ -11,6 +11,7 @@ assemble:
 	$(CC) -Wall -c ./src/wrap_sdl/draw.c -o ./build/draw.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/wrap_sdl/init.c -o ./build/init.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/wrap_sdl/input.c -o ./build/input.o $(COMPILE_COMMANDS)
+	$(CC) -Wall -c ./src/generic/collide.c -o ./build/collide.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/objects/particle.c -o ./build/particle.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/objects/asteroid.c -o ./build/asteroid.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/objects/ship.c -o ./build/ship.o $(COMPILE_COMMANDS)

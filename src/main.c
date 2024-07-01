@@ -7,6 +7,7 @@
 #include "wrap_sdl/draw.h"
 #include "wrap_sdl/init.h"
 #include "wrap_sdl/input.h"
+#include "generic/collide.h"
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 
@@ -30,11 +31,12 @@ int main(int argc, char *argv[]) {
         {-10, 5},
         {10, 0}
     };
-    Ship testship = init_ship(init_pos, test_offsets, 3);
+    Ship *testship = init_ship(init_pos, test_offsets, 3);
 
     // create an asteroid
     Vector2 roid_pos = {60, 60};
     Vector2 vel_vec = {1, 1};
+    /* Vector2 zero_vec = {0, 0}; */
     Asteroid *testroid = create_asteroid(roid_pos, vel_vec, 1, 1);
     insert_asteroid_at_beginning(&asteroids_head, testroid);
 
@@ -51,13 +53,13 @@ int main(int argc, char *argv[]) {
         update_input();
 
         // update entities
-        update_ship(&testship);
+        update_ship(testship);
         update_particle_list(&particles_head);
         update_asteroid_list(&asteroids_head);
 
         // draw objects
         update_window();
-        draw_ship(&testship);
+        draw_ship(testship);
         draw_particle_list(particles_head);
         draw_asteroid_list(asteroids_head);
 
