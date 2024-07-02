@@ -62,10 +62,10 @@ void render_point(Vector2 point, Colour col, float size) {
     }
 }
 
-void render_line(int x1, int y1, int x2, int y2, Colour col) {
+void render_line(Vector2 p1, Vector2 p2, Colour col) {
     // apply scaling
-    Vector2 point1 = {x1 * zoom_x, y1 * zoom_y};
-    Vector2 point2 = {x2 * zoom_x, y2 * zoom_y};
+    Vector2 point1 = {p1.x * zoom_x, p1.y * zoom_y};
+    Vector2 point2 = {p2.x * zoom_x, p2.y * zoom_y};
    
     if (SDL_SetRenderDrawBlendMode(app.renderer, SDL_BLENDMODE_NONE) < 0) {
         printf("Couldn't set blend mode with error: %s\n", SDL_GetError());

@@ -12,3 +12,4 @@ int screen_height = DEFAULT_SCREEN_HEIGHT;
 // linked lists
 struct ParticleNode *particles_head = NULL;
 struct AsteroidNode *asteroids_head = NULL;
+struct BulletNode *bullets_head = NULL;

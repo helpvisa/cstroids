@@ -14,5 +14,6 @@ extern int screen_height;
 // linked lists
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
+extern struct BulletNode *bullets_head;
 
 #endif

@@ -70,4 +70,16 @@ struct AsteroidNode {
     struct AsteroidNode *next;
 };
 
+typedef struct {
+    Vector2 pos;
+    Vector2 velocity;
+    Colour col;
+    int life;
+} Bullet;
+
+struct BulletNode {
+    Bullet *bullet;
+    struct BulletNode *next;
+};
+
 #endif
