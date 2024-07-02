@@ -20,7 +20,7 @@ Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     ship->offsets = offsets;
     ship->offset_count = offset_count;
     ship->max_velocity = 10;
-    ship->speed = 0.03;
+    ship->speed = 0.08;
     ship->angle = 0;
     ship->rot_speed = 3.5;
 
