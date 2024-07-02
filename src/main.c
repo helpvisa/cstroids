@@ -28,10 +28,12 @@ int main(int argc, char *argv[]) {
     Vector2 init_pos = {DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0};
     Vector2 test_offsets[] = {
         {-10, -5},
+        {-6, -4},
+        {-6, 4},
         {-10, 5},
         {10, 0}
     };
-    Ship *testship = init_ship(init_pos, test_offsets, 3);
+    Ship *testship = init_ship(init_pos, test_offsets, 5);
 
     // create an asteroid
     Vector2 roid_pos = {60, 60};
