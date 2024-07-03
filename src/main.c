@@ -3,6 +3,7 @@
 #include "rng.h"
 #include "objects/particle.h"
 #include "objects/asteroid.h"
+#include "objects/bullet.h"
 #include "objects/ship.h"
 #include "wrap_sdl/draw.h"
 #include "wrap_sdl/init.h"
@@ -14,6 +15,8 @@
 extern App app;
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
+extern struct BulletNode *bullets_head;
+extern Ship *player_ship;
 
 int main(int argc, char *argv[]) {
     memset(&app, 0, sizeof(App));
@@ -33,7 +36,7 @@ int main(int argc, char *argv[]) {
         {-10, 5},
         {10, 0}
     };
-    Ship *testship = init_ship(init_pos, test_offsets, 5);
+    player_ship = init_ship(init_pos, test_offsets, 5);
 
     // create an asteroid
     Vector2 roid_pos = {60, 60};
@@ -55,15 +58,17 @@ int main(int argc, char *argv[]) {
         update_input();
 
         // update entities
-        update_ship(testship);
+        update_ship(player_ship);
         update_particle_list(&particles_head);
         update_asteroid_list(&asteroids_head);
+        update_bullet_list(&bullets_head);
 
         // draw objects
         update_window();
-        draw_ship(testship);
+        draw_ship(player_ship);
         draw_particle_list(particles_head);
         draw_asteroid_list(asteroids_head);
+        draw_bullet_list(bullets_head);
 
         // present the final rendered scene
         // at a fixed rate of 60fps

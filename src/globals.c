@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "structs.h"
+#include "objects/ship.h"
 
 // rendering
 App app = {NULL, NULL};
@@ -13,3 +14,7 @@ int screen_height = DEFAULT_SCREEN_HEIGHT;
 struct ParticleNode *particles_head = NULL;
 struct AsteroidNode *asteroids_head = NULL;
 struct BulletNode *bullets_head = NULL;
+
+// player
+Ship *player_ship = NULL;
+int bullet_count = 0;

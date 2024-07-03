@@ -40,6 +40,7 @@ typedef struct {
     float rot_speed;
     Vector2 *offsets;
     int offset_count;
+    int shot_cooldown;
 } Ship;
 
 typedef struct {

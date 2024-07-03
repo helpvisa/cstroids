@@ -16,4 +16,8 @@ extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
 
+// player
+extern Ship *player_ship;
+extern int bullet_count;
+
 #endif

@@ -3,12 +3,15 @@
 #include "../rng.h"
 #include "../wrap_sdl/draw.h"
 #include "particle.h"
+#include "bullet.h"
 #include <math.h>
 
 extern InputMap inputmap;
 extern struct ParticleNode *particles_head;
+extern struct BulletNode *bullets_head;
 
 extern float ratio;
+extern int bullet_count;
 
 Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     Vector2 zero = {0, 0};
@@ -23,6 +26,7 @@ Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     ship->speed = 0.08;
     ship->angle = 0;
     ship->rot_speed = 3.5;
+    ship->shot_cooldown = 0;
 
     return ship;
 }
@@ -32,7 +36,20 @@ void update_ship(Ship *ship) {
     float angle_rad = ship->angle * (PI / 180);
     float s = sin(angle_rad);
     float c = cos(angle_rad);
+    ship->shot_cooldown -= 1;
 
+    if (inputmap.shoot) {
+        // spawn bullets
+        if (bullet_count < 3 && ship->shot_cooldown < 1) {
+            ship->shot_cooldown = 5;
+            bullet_count += 1;
+            Vector2 bullet_origin = {ship->pos.x + c * 10, ship->pos.y + s * 10};
+            Vector2 bullet_vel = {10 * c, 10 * s};
+            Colour bullet_col = {0, 255, 0, 255};
+            Bullet *bullet = create_bullet(bullet_origin, bullet_vel, bullet_col, 40);
+            insert_bullet_at_end(&bullets_head, bullet);
+        }
+    }
     if (inputmap.up) {
         // activate thrusters
         ship->velocity.x += c * ship->speed;
@@ -49,22 +66,20 @@ void update_ship(Ship *ship) {
             ship->velocity.y = -ship->max_velocity;
         }
         // create engine particles
-        for (int i = 0; i < 3; i++) {
-            float x_rand = (float)rng(10, 0) / 10;
-            float y_rand = (float)rng(10, 0) / 10;
-            float col_rand = (float)rng(60, 0);
-            Colour col = {255 - col_rand, 150 + col_rand, 0, 255};
-            Vector2 part_origin = {ship->pos.x + c * -10 + x_rand - 0.5,
-                                   ship->pos.y + s * -10 + y_rand - 0.5};
-            Vector2 part_vel = {ship->velocity.x + c * -8 + (x_rand - 0.5) * 2,
-                                ship->velocity.y + s * -8 + (y_rand - 0.5) * 2};
-            Particle *new_part = create_particle(part_origin,
-                                                 part_vel,
-                                                 10 + col_rand,
-                                                 col,
-                                                 col_rand / 10);
-            insert_particle_at_end(&particles_head, new_part);
-        }
+        float x_rand = (float)rng(10, 0) / 10;
+        float y_rand = (float)rng(10, 0) / 10;
+        float col_rand = (float)rng(60, 0);
+        Colour col = {255 - col_rand, 150 + col_rand, 0, 255};
+        Vector2 part_origin = {ship->pos.x + c * -10 + x_rand - 0.5,
+                                ship->pos.y + s * -10 + y_rand - 0.5};
+        Vector2 part_vel = {ship->velocity.x + c * -4 + (x_rand - 0.5) * 2,
+                            ship->velocity.y + s * -4 + (y_rand - 0.5) * 2};
+        Particle *new_part = create_particle(part_origin,
+                                                part_vel,
+                                                60 * 30,
+                                                col,
+                                                col_rand / 10);
+        insert_particle_at_end(&particles_head, new_part);
     }
     if (inputmap.left) {
         ship->angle -= ship->rot_speed;
