@@ -19,6 +19,10 @@ void key_down(SDL_KeyboardEvent *event) {
             case SDL_SCANCODE_SPACE:
                 inputmap.shoot = 1;
                 break;
+            case SDL_SCANCODE_Z:
+            case SDL_SCANCODE_X:
+                inputmap.shoot = 1;
+                break;
 
             default:
                 break;
@@ -39,6 +43,10 @@ void key_up(SDL_KeyboardEvent *event) {
                 inputmap.right = 0;
                 break;
             case SDL_SCANCODE_SPACE:
+                inputmap.shoot = 0;
+                break;
+            case SDL_SCANCODE_Z:
+            case SDL_SCANCODE_X:
                 inputmap.shoot = 0;
                 break;
 
