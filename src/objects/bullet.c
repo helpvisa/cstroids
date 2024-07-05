@@ -135,11 +135,11 @@ void update_bullet(struct BulletNode **ref) {
                                                rand_y * ((1.5 - curr_roid->roid->size) * 4)};
                         Vector2 new_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
                         float new_size = curr_roid->roid->size - 0.2;
-                        Asteroid *new_roid = create_asteroid(new_pos, new_vel, new_size, rand_x);
+                        Asteroid *new_roid = create_asteroid(new_pos, new_vel, new_size, new_vel.x);
                         insert_asteroid_at_end(&asteroids_head, new_roid);
                     }
                 }
-                // spawn fan of particles
+                // spawn fan of particles (asteroid)
                 for (float angle = 0; angle < 360; angle += 15) {
                     float angle_rad = angle * (PI / 180);
                     float s = sin(angle_rad);
@@ -151,6 +151,25 @@ void update_bullet(struct BulletNode **ref) {
                     Vector2 part_origin = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
                     Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
                     Colour col = {200 + 55 * y_rand, 60 * x_rand, 255, 255};
+                    Particle *new_part = create_particle(part_origin,
+                                                        part_vel,
+                                                        60 * (8 + x_rand + y_rand),
+                                                        col,
+                                                        8 + x_rand + y_rand);
+                    insert_particle_at_end(&particles_head, new_part);
+                }
+                // spawn fan of particles (bullet)
+                for (float angle = 0; angle < 360; angle += 120) {
+                    float angle_rad = angle * (PI / 180);
+                    float s = sin(angle_rad);
+                    float c = cos(angle_rad);
+
+                    float x_rand = (float)rng(10, 0) / 10;
+                    float y_rand = (float)rng(10, 0) / 10;
+
+                    Vector2 part_origin = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
+                    Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
+                    Colour col = {60 * y_rand, 200, 60 * x_rand, 255};
                     Particle *new_part = create_particle(part_origin,
                                                         part_vel,
                                                         60 * (8 + x_rand + y_rand),
