@@ -89,15 +89,15 @@ int main(int argc, char *argv[]) {
             update_ship(player_ship);
         }
         update_particle_list(&particles_head);
-        update_asteroid_list(&asteroids_head);
         update_bullet_list(&bullets_head);
+        update_asteroid_list(&asteroids_head);
 
         // draw objects
         update_window();
-        draw_ship(player_ship);
         draw_particle_list(particles_head);
-        draw_asteroid_list(asteroids_head);
+        draw_ship(player_ship);
         draw_bullet_list(bullets_head);
+        draw_asteroid_list(asteroids_head);
 
         // present the final rendered scene
         // at a fixed rate of 60fps

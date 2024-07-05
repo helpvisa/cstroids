@@ -25,7 +25,7 @@ Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     ship->max_velocity = 10;
     ship->speed = 0.08;
     ship->angle = 0;
-    ship->rot_speed = 5;
+    ship->rot_speed = 4.25;
     ship->shot_cooldown = 0;
 
     return ship;
@@ -41,7 +41,7 @@ void update_ship(Ship *ship) {
     if (inputmap.shoot) {
         // spawn bullets
         if (bullet_count < 3 && ship->shot_cooldown < 1) {
-            ship->shot_cooldown = 5;
+            ship->shot_cooldown = 8;
             bullet_count += 1;
             Vector2 bullet_origin = {ship->pos.x + c * 10, ship->pos.y + s * 10};
             Vector2 bullet_vel = {10 * c, 10 * s};
