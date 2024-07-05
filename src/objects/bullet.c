@@ -3,9 +3,12 @@
 #include "../rng.h"
 #include "../wrap_sdl/draw.h"
 #include "particle.h"
+#include "asteroid.h"
+#include "../generic/collide.h"
 #include <math.h>
 
 extern struct ParticleNode *particles_head;
+extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
 extern int bullet_count;
 
@@ -113,6 +116,54 @@ void update_bullet(struct BulletNode **ref) {
         // now delete
         remove_bullet_from_list(&bullets_head, ref);
         bullet_count -= 1;
+    } else {
+        // delete if hitting asteroid
+        struct AsteroidNode *curr_roid = asteroids_head;
+        while (curr_roid != NULL) {
+            if (collide_point((*ref)->bullet->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
+                bullet_count -= 1;
+                // spawn child asteroids
+                if (curr_roid->roid->size > 0.5) {
+                    for (int i = 0; i < 2; i ++) {
+                        float rand_x = ((float)rng(10, 0) - 5) / 10;
+                        float rand_y = ((float)rng(10, 0) - 5) / 10;
+                        Vector2 new_vel = {curr_roid->roid->velocity.x +
+                                               (*ref)->bullet->velocity.x / 10 +
+                                               rand_x * ((1.5 - curr_roid->roid->size) * 4),
+                                           curr_roid->roid->velocity.y +
+                                               (*ref)->bullet->velocity.y / 10 +
+                                               rand_y * ((1.5 - curr_roid->roid->size) * 4)};
+                        Vector2 new_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
+                        float new_size = curr_roid->roid->size - 0.2;
+                        Asteroid *new_roid = create_asteroid(new_pos, new_vel, new_size, rand_x);
+                        insert_asteroid_at_end(&asteroids_head, new_roid);
+                    }
+                }
+                // spawn fan of particles
+                for (float angle = 0; angle < 360; angle += 15) {
+                    float angle_rad = angle * (PI / 180);
+                    float s = sin(angle_rad);
+                    float c = cos(angle_rad);
+
+                    float x_rand = (float)rng(10, 0) / 10;
+                    float y_rand = (float)rng(10, 0) / 10;
+
+                    Vector2 part_origin = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
+                    Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
+                    Colour col = {200 + 55 * y_rand, 60 * x_rand, 255, 255};
+                    Particle *new_part = create_particle(part_origin,
+                                                        part_vel,
+                                                        60 * (8 + x_rand + y_rand),
+                                                        col,
+                                                        4 + x_rand + y_rand);
+                    insert_particle_at_end(&particles_head, new_part);
+                }
+                remove_asteroid_from_list(&asteroids_head, &curr_roid);
+                remove_bullet_from_list(&bullets_head, ref);
+                break;
+            }
+            curr_roid = curr_roid->next;
+        }
     }
 }
 

@@ -25,7 +25,7 @@ Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     ship->max_velocity = 10;
     ship->speed = 0.08;
     ship->angle = 0;
-    ship->rot_speed = 3.5;
+    ship->rot_speed = 5;
     ship->shot_cooldown = 0;
 
     return ship;

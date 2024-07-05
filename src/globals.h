@@ -18,6 +18,7 @@ extern struct BulletNode *bullets_head;
 
 // player
 extern Ship *player_ship;
+extern int player_is_alive;
 extern int bullet_count;
 
 #endif

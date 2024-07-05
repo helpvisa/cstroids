@@ -17,4 +17,5 @@ struct BulletNode *bullets_head = NULL;
 
 // player
 Ship *player_ship = NULL;
+int player_is_alive = 1;
 int bullet_count = 0;

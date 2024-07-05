@@ -25,15 +25,15 @@ Asteroid *create_asteroid(Vector2 pos, Vector2 velocity, float size, float rot) 
     roid->velocity = velocity;
     roid->size = size;   // float multiplier for size
     roid->rotation_speed = rot;
-    roid->offsets = roid_offsets;
+    roid->offsets = malloc(sizeof(Vector2) * 8);
     roid->offset_count = 8;
 
     // slightly randomize offsets for visual variation
     for (int i = 0; i < roid->offset_count; i++) {
         float rand_x = ((float)rng(10, 0) / 10 - 0.5) * 8;
         float rand_y = ((float)rng(10, 0) / 10 - 0.5) * 8;
-        roid->offsets[i].x += rand_x;
-        roid->offsets[i].y += rand_y;
+        roid->offsets[i].x = roid_offsets[i].x + rand_x;
+        roid->offsets[i].y = roid_offsets[i].y + rand_y;
         // apply size multiplier
         roid->offsets[i].x *= roid->size;
         roid->offsets[i].y *= roid->size;
@@ -73,6 +73,7 @@ void remove_asteroid_from_list(struct AsteroidNode **head, struct AsteroidNode *
     if (current != NULL && current->roid == (*ref)->roid) {
         *ref = current->next;
         *head = current->next;
+        free(current->roid->offsets);
         free(current->roid);
         free(current);
         return;
@@ -90,6 +91,7 @@ void remove_asteroid_from_list(struct AsteroidNode **head, struct AsteroidNode *
 
     prev->next = current->next;
     *ref = prev;
+    free(current->roid->offsets);
     free(current->roid);
     free(current);
 }
