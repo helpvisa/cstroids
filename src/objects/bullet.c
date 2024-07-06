@@ -13,6 +13,7 @@ extern struct BulletNode *bullets_head;
 extern int bullet_count;
 
 extern float ratio;
+extern const Vector2 zero_vector;
 
 Bullet *create_bullet(Vector2 pos, Vector2 velocity, Colour col, int life) {
     Bullet *bullet = malloc(sizeof(Bullet));
@@ -120,7 +121,11 @@ void update_bullet(struct BulletNode **ref) {
         // delete if hitting asteroid
         struct AsteroidNode *curr_roid = asteroids_head;
         while (curr_roid != NULL) {
-            if (collide_point((*ref)->bullet->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
+            // check strip to more closely match visual
+            Vector2 vel_point = {(*ref)->bullet->pos.x - (*ref)->bullet->velocity.x,
+                                 (*ref)->bullet->pos.y - (*ref)->bullet->velocity.y};
+            Vector2 bullet_offsets[2] = {(*ref)->bullet->pos, vel_point};
+            if (collide_polygons(bullet_offsets, 2, zero_vector, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
                 bullet_count -= 1;
                 // spawn child asteroids
                 if (curr_roid->roid->size > 0.5) {
@@ -149,7 +154,8 @@ void update_bullet(struct BulletNode **ref) {
                     float y_rand = (float)rng(10, 0) / 10;
 
                     Vector2 part_origin = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
-                    Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
+                    Vector2 part_vel = {curr_roid->roid->velocity.x + c + (x_rand - 0.5) / 2,
+                                        curr_roid->roid->velocity.y + s + (y_rand - 0.5) / 2};
                     Colour col = {200 + 55 * y_rand, 60 * x_rand, 255, 255};
                     Particle *new_part = create_particle(part_origin,
                                                         part_vel,

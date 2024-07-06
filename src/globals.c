@@ -19,3 +19,6 @@ struct BulletNode *bullets_head = NULL;
 Ship *player_ship = NULL;
 int player_is_alive = 1;
 int bullet_count = 0;
+
+// math and vectors
+const Vector2 zero_vector = {0, 0};

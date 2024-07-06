@@ -21,4 +21,7 @@ extern Ship *player_ship;
 extern int player_is_alive;
 extern int bullet_count;
 
+// math and vectors
+extern const Vector2 zero_vector;
+
 #endif

@@ -2,16 +2,19 @@
 #include "../structs.h"
 #include "../rng.h"
 #include "../wrap_sdl/draw.h"
+#include "../generic/collide.h"
 #include "particle.h"
 #include "bullet.h"
 #include <math.h>
 
 extern InputMap inputmap;
 extern struct ParticleNode *particles_head;
+extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
 
 extern float ratio;
 extern int bullet_count;
+extern int player_is_alive;
 
 Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     Vector2 zero = {0, 0};
@@ -115,6 +118,15 @@ void update_ship(Ship *ship) {
         ship->pos.y = -10;
     } else if (ship->pos.y < -10) {
         ship->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
+    }
+
+    // check for collision with asteroids
+    struct AsteroidNode *curr_roid = asteroids_head;
+    while (curr_roid != NULL) {
+        if (collide_polygons(ship->offsets, ship->offset_count, ship->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
+            player_is_alive = 0;
+        }
+        curr_roid = curr_roid->next;
     }
 }
 
