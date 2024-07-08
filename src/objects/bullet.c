@@ -122,10 +122,16 @@ void update_bullet(struct BulletNode **ref) {
         struct AsteroidNode *curr_roid = asteroids_head;
         while (curr_roid != NULL) {
             // check strip to more closely match visual
-            Vector2 vel_point = {(*ref)->bullet->pos.x - (*ref)->bullet->velocity.x,
-                                 (*ref)->bullet->pos.y - (*ref)->bullet->velocity.y};
-            Vector2 bullet_offsets[2] = {(*ref)->bullet->pos, vel_point};
-            if (collide_polygons(bullet_offsets, 2, zero_vector, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
+            /* Vector2 vel_point = {(*ref)->bullet->pos.x - (*ref)->bullet->velocity.x, */
+            /*                      (*ref)->bullet->pos.y - (*ref)->bullet->velocity.y}; */
+            /* Vector2 bullet_offsets[2] = {(*ref)->bullet->pos, vel_point}; */
+            Vector2 b1 = {-10, -10};
+            Vector2 b2 = { 10, -10};
+            Vector2 b3 = { 10,  10};
+            Vector2 b4 = { 10,  10};
+            Vector2 o[4] = {b1, b2, b3, b4};
+            /* if (collide_polygons(bullet_offsets, 2, zero_vector, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) { */
+            if (collide_polygons(o, 4, (*ref)->bullet->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
                 bullet_count -= 1;
                 // spawn child asteroids
                 if (curr_roid->roid->size > 0.5) {
