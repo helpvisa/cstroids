@@ -95,7 +95,9 @@ int main(int argc, char *argv[]) {
         // draw objects
         update_window();
         draw_particle_list(particles_head);
-        draw_ship(player_ship);
+        if (player_is_alive) {
+            draw_ship(player_ship);
+        }
         draw_bullet_list(bullets_head);
         draw_asteroid_list(asteroids_head);
 
