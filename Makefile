@@ -16,6 +16,7 @@ assemble:
 	$(CC) -Wall -c ./src/objects/asteroid.c -o ./build/asteroid.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/objects/bullet.c -o ./build/bullet.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/objects/ship.c -o ./build/ship.o $(COMPILE_COMMANDS)
+	$(CC) -Wall -c ./src/helpers/particle-helpers.c -o ./build/particle-helpers.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/globals.c -o ./build/globals.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/rng.c -o ./build/rng.o $(COMPILE_COMMANDS)
 	$(CC) -Wall -c ./src/main.c -o ./build/main.o $(COMPILE_COMMANDS)

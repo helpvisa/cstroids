@@ -5,6 +5,7 @@
 #include "particle.h"
 #include "asteroid.h"
 #include "../generic/collide.h"
+#include "../helpers/particle-helpers.h"
 #include <math.h>
 
 extern struct ParticleNode *particles_head;
@@ -96,24 +97,9 @@ void update_bullet(struct BulletNode **ref) {
     // delete if life is out
     if ((*ref)->bullet->life < 0) {
         // spawn fan of particles
-        for (float angle = 0; angle < 360; angle += 45) {
-            float angle_rad = angle * (PI / 180);
-            float s = sin(angle_rad);
-            float c = cos(angle_rad);
-
-            float x_rand = (float)rng(10, 0) / 10;
-            float y_rand = (float)rng(10, 0) / 10;
-
-            Vector2 part_origin = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
-            Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
-            Colour col = {60 * y_rand, 200, 60 * x_rand, 255};
-            Particle *new_part = create_particle(part_origin,
-                                                 part_vel,
-                                                 60 * (8 + x_rand + y_rand),
-                                                 col,
-                                                 4 + x_rand + y_rand);
-            insert_particle_at_end(&particles_head, new_part);
-        }
+        Colour fan_part_col = {60, 200, 60, 255};
+        Vector2 fan_part_pos = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
+        create_particle_fan(&particles_head, 0.79, fan_part_pos, fan_part_col, 60, 4, 1, 55);
         // now delete
         remove_bullet_from_list(&bullets_head, ref);
         bullet_count -= 1;
@@ -151,44 +137,15 @@ void update_bullet(struct BulletNode **ref) {
                     }
                 }
                 // spawn fan of particles (asteroid)
-                for (float angle = 0; angle < 360; angle += 15) {
-                    float angle_rad = angle * (PI / 180);
-                    float s = sin(angle_rad);
-                    float c = cos(angle_rad);
-
-                    float x_rand = (float)rng(10, 0) / 10;
-                    float y_rand = (float)rng(10, 0) / 10;
-
-                    Vector2 part_origin = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
-                    Vector2 part_vel = {curr_roid->roid->velocity.x + c + (x_rand - 0.5) / 2,
-                                        curr_roid->roid->velocity.y + s + (y_rand - 0.5) / 2};
-                    Colour col = {200 + 55 * y_rand, 60 * x_rand, 255, 255};
-                    Particle *new_part = create_particle(part_origin,
-                                                        part_vel,
-                                                        60 * (8 + x_rand + y_rand),
-                                                        col,
-                                                        8 + x_rand + y_rand);
-                    insert_particle_at_end(&particles_head, new_part);
-                }
+                Colour roid_part_col = {200, 60, 255, 255};
+                Vector2 roid_part_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
+                create_particle_fan(&particles_head, 0.26, roid_part_pos, roid_part_col, 60, 4, 1.6, 20);
                 // spawn fan of particles (bullet)
-                for (float angle = 0; angle < 360; angle += 120) {
-                    float angle_rad = angle * (PI / 180);
-                    float s = sin(angle_rad);
-                    float c = cos(angle_rad);
+                Colour bul_part_col = {60, 200, 60, 255};
+                Vector2 bul_part_pos = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
+                create_particle_fan(&particles_head, 2.09, bul_part_pos, bul_part_col, 60, 4, 1, 55);
 
-                    float x_rand = (float)rng(10, 0) / 10;
-                    float y_rand = (float)rng(10, 0) / 10;
-
-                    Vector2 part_origin = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
-                    Vector2 part_vel = {c + (x_rand - 0.5) / 2, s + (y_rand - 0.5) / 2};
-                    Colour col = {60 * y_rand, 200, 60 * x_rand, 255};
-                    Particle *new_part = create_particle(part_origin,
-                                                        part_vel,
-                                                        60 * (8 + x_rand + y_rand),
-                                                        col,
-                                                        4 + x_rand + y_rand);
-                    insert_particle_at_end(&particles_head, new_part);
-                }
+                // remove bullet and asteroid from update lists
                 remove_asteroid_from_list(&asteroids_head, &curr_roid);
                 remove_bullet_from_list(&bullets_head, ref);
                 break;
