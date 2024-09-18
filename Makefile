@@ -1,38 +1,81 @@
-OUTPUT=cstroids
-CC=cc
-LINK_COMMANDS=-lm -lSDL2
-COMPILE_COMMANDS=
+.POSIX:
+.SUFFIXES:
+CC = cc
+LDLIBS = -lm -lSDL2
+LDFLAGS = 
+CFLAGS =
+OUTPUT = cstroids
+PREFIX = /usr/local
+
+OS_FLAG != uname -s
 
 # assumed default OS is Linux
-OS_FLAG!=uname -s
-
 ifeq ($(OS_FLAG),FreeBSD)
-	LINK_COMMANDS:=-L/usr/local/lib $(LINK_COMMANDS)
-	COMPILE_COMMANDS:=-I/usr/local/include $(COMPILE_COMMANDS)
+	LDLIBS:=-L/usr/local/lib $(LDLIBS)
+	CFLAGS:=-I/usr/local/include $(CFLAGS)
 endif
 
-main: assemble
-	$(CC) -Wall ./build/*.o -o ./$(OUTPUT) $(LINK_COMMANDS)
-
-assemble: os
+all: cstroids
+install: cstroids
+	cp ./$(OUTPUT) $(PREFIX)/bin
+uninstall:
+	rm $(PREFIX)/bin/$(OUTPUT)
+cstroids: build/draw.o\
+	build/init.o\
+	build/input.o\
+	build/collide.o\
+	build/particle.o\
+	build/asteroid.o\
+	build/bullet.o\
+	build/ship.o\
+	build/particle-helpers.o\
+	build/globals.o\
+	build/rng.o\
+	build/main.o
+	$(CC) -Wall $(LDFLAGS) -o ./$(OUTPUT)\
+		build/draw.o\
+		build/init.o\
+		build/input.o\
+		build/collide.o\
+		build/particle.o\
+		build/asteroid.o\
+		build/bullet.o\
+		build/ship.o\
+		build/particle-helpers.o\
+		build/globals.o\
+		build/rng.o\
+		build/main.o\
+		$(LDLIBS)
+build/draw.o: mkdir src/wrap_sdl/draw.c src/wrap_sdl/draw.h
+	$(CC) -Wall $(CFLAGS) -c src/wrap_sdl/draw.c -o build/draw.o
+build/init.o: mkdir src/wrap_sdl/init.c src/wrap_sdl/init.h
+	$(CC) -Wall $(CFLAGS) -c src/wrap_sdl/init.c -o build/init.o
+build/input.o: mkdir src/wrap_sdl/input.c src/wrap_sdl/input.h
+	$(CC) -Wall $(CFLAGS) -c src/wrap_sdl/input.c -o build/input.o
+build/collide.o: mkdir src/generic/collide.c src/generic/collide.h
+	$(CC) -Wall $(CFLAGS) -c src/generic/collide.c -o build/collide.o
+build/particle.o: mkdir src/objects/particle.c src/objects/particle.h
+	$(CC) -Wall $(CFLAGS) -c src/objects/particle.c -o build/particle.o
+build/asteroid.o: mkdir src/objects/asteroid.c src/objects/asteroid.h
+	$(CC) -Wall $(CFLAGS) -c src/objects/asteroid.c -o build/asteroid.o
+build/bullet.o: mkdir src/objects/bullet.c src/objects/bullet.h
+	$(CC) -Wall $(CFLAGS) -c src/objects/bullet.c -o build/bullet.o
+build/ship.o: mkdir src/objects/ship.c src/objects/ship.h
+	$(CC) -Wall $(CFLAGS) -c src/objects/ship.c -o build/ship.o
+build/particle-helpers.o: mkdir src/helpers/particle-helpers.c src/helpers/particle-helpers.h
+	$(CC) -Wall $(CFLAGS) -c src/helpers/particle-helpers.c -o build/particle-helpers.o
+build/globals.o: mkdir src/globals.c src/globals.h
+	$(CC) -Wall $(CFLAGS) -c src/globals.c -o build/globals.o
+build/rng.o: mkdir src/rng.c src/rng.h
+	$(CC) -Wall $(CFLAGS) -c src/rng.c -o build/rng.o
+build/main.o: mkdir src/main.c
+	$(CC) -Wall $(CFLAGS) -c src/main.c -o build/main.o
+mkdir:
 	mkdir -p ./build
-	$(CC) -Wall -c ./src/wrap_sdl/draw.c -o ./build/draw.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/wrap_sdl/init.c -o ./build/init.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/wrap_sdl/input.c -o ./build/input.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/generic/collide.c -o ./build/collide.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/objects/particle.c -o ./build/particle.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/objects/asteroid.c -o ./build/asteroid.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/objects/bullet.c -o ./build/bullet.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/objects/ship.c -o ./build/ship.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/helpers/particle-helpers.c -o ./build/particle-helpers.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/globals.c -o ./build/globals.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/rng.c -o ./build/rng.o $(COMPILE_COMMANDS)
-	$(CC) -Wall -c ./src/main.c -o ./build/main.o $(COMPILE_COMMANDS)
-
 clean:
 	rm -rf ./build
-
+	rm ./$(OUTPUT)
 os:
-	@echo Preparing environment for $(OS_FLAG)
-	@echo Link commands are \"$(LINK_COMMANDS)\"
-	@echo Compile commands are \"$(COMPILE_COMMANDS)\"
+	@echo Using $(OS_FLAG) environment.
+	@echo LDLIBS: \"$(LDLIBS)\"
+	@echo CFLAGS: \"$(CFLAGS)\"
