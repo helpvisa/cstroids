@@ -1,0 +1,41 @@
+.POSIX:
+.SUFFIXES:
+CC = cc
+LDLIBS = -lm -lSDL2
+CFLAGS =
+OUTPUT = cstroids
+OS_FLAG != uname -s
+
+# assumed default OS is Linux
+ifeq ($(OS_FLAG),FreeBSD)
+	LDLIBS:=-L/usr/local/lib $(LDLIBS)
+	CFLAGS:=-I/usr/local/include $(CFLAGS)
+endif
+
+main: build/draw.o build/init.o build/input.o build/collide.o build/particle.o build/asteroid.o build/bullet.o build/ship.o build/particle-helpers.o build/globals.o build/rng.o build/main.o
+	$(CC) -Wall ./build/*.o -o ./$(OUTPUT) $(LDLIBS)
+
+build/draw.o: src/wrap_sdl/draw.c src/wrap_sdl/draw.h
+build/init.o: src/wrap_sdl/init.c src/wrap_sdl/init.h
+build/input.o: src/wrap_sdl/input.c src/wrap_sdl/input.h
+build/collide.o: src/generic/collide.c src/generic/collide.h
+build/particle.o: src/objects/particle.c src/objects/particle.h
+build/asteroid.o: src/objects/asteroid.c src/objects/asteroid.h
+build/bullet.o: src/objects/bullet.c src/objects/bullet.h
+build/ship.o: src/objects/ship.c src/objects/ship.h
+build/particle-helpers.o: src/helpers/particle-helpers.c src/helpers/particle-helpers.h
+build/globals.o: src/globals.c src/globals.h
+build/rng.o: src/rng.c src/rng.h
+build/main.o: src/main.c
+
+clean:
+	rm -rf ./build
+
+os:
+	@echo Preparing environment for $(OS_FLAG)
+	@echo LDLIBS: \"$(LDLIBS)\"
+	@echo CFLAGS: \"$(CFLAGS)\"
+
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) -Wall $(CFLAGS) -c -o $@ $<
