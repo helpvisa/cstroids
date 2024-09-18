@@ -1,18 +1,30 @@
 .POSIX:
 .SUFFIXES:
 CC = cc
-LDLIBS = -lm -lSDL2
+LDLIBS = 
 LDFLAGS = 
 CFLAGS =
 OUTPUT = cstroids
 PREFIX = /usr/local
 
-OS_FLAG != uname -s
+FREEBSD = 
+WINDOWS_CROSSCOMPILE = 
+STATIC = 
 
 # assumed default OS is Linux
-ifeq ($(OS_FLAG),FreeBSD)
-	LDLIBS:=-L/usr/local/lib $(LDLIBS)
-	CFLAGS:=-I/usr/local/include $(CFLAGS)
+ifdef FREEBSD
+	LDLIBS += -L/usr/local/lib
+	CFLAGS += -I/usr/local/include
+else ifdef WINDOWS_CROSSCOMPILE
+	CC = x86_64-w64-mingw32-gcc
+	OUTPUT = cstroids.exe
+	LDLIBS += -mwindows -lmingw32 -lSDL2main -lm -lSDL2
+endif
+
+ifdef STATIC
+	LDLIBS += -Wl,-Bstatic -lSDL2 -Wl,-Bdynamic -lm
+else
+	LDLIBS += -lm -lSDL2
 endif
 
 all: cstroids
@@ -74,8 +86,9 @@ mkdir:
 	mkdir -p ./build
 clean:
 	rm -rf ./build
-	rm ./$(OUTPUT)
-os:
+	rm ./$(OUTPUT).*
+flags:
 	@echo Using $(OS_FLAG) environment.
 	@echo LDLIBS: \"$(LDLIBS)\"
+	@echo LDFLAGS: \"$(LDFLAGS)\"
 	@echo CFLAGS: \"$(CFLAGS)\"

@@ -2,6 +2,7 @@
 #include "../structs.h"
 #include "../rng.h"
 #include "../objects/particle.h"
+#include <math.h>
 
 void create_particle_fan(struct ParticleNode **head, float shift, Vector2 pos, Colour col, int lifetime, float size, float vel_mult, float rand_mult) {
     for (float angle = 0; angle < 2 * PI; angle += shift) {
