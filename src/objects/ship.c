@@ -128,7 +128,7 @@ void update_ship(Ship *ship) {
             player_is_alive = 0;
             Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
             Colour fan_part_col = {200, 200, 200, 255};
-            create_particle_fan(&particles_head, 0.01, fan_part_pos, fan_part_col, 1800, 8, 33, 55);
+            create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55);
         }
         curr_roid = curr_roid->next;
     }

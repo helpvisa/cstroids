@@ -41,6 +41,7 @@ cstroids: build/draw.o\
 	build/bullet.o\
 	build/ship.o\
 	build/particle-helpers.o\
+	build/asteroid-helpers.o\
 	build/globals.o\
 	build/rng.o\
 	build/main.o
@@ -54,6 +55,7 @@ cstroids: build/draw.o\
 		build/bullet.o\
 		build/ship.o\
 		build/particle-helpers.o\
+		build/asteroid-helpers.o\
 		build/globals.o\
 		build/rng.o\
 		build/main.o\
@@ -76,6 +78,8 @@ build/ship.o: mkdir src/objects/ship.c src/objects/ship.h
 	$(CC) -Wall $(CFLAGS) -c src/objects/ship.c -o build/ship.o
 build/particle-helpers.o: mkdir src/helpers/particle-helpers.c src/helpers/particle-helpers.h
 	$(CC) -Wall $(CFLAGS) -c src/helpers/particle-helpers.c -o build/particle-helpers.o
+build/asteroid-helpers.o: mkdir src/helpers/asteroid-helpers.c src/helpers/asteroid-helpers.h
+	$(CC) -Wall $(CFLAGS) -c src/helpers/asteroid-helpers.c -o build/asteroid-helpers.o
 build/globals.o: mkdir src/globals.c src/globals.h
 	$(CC) -Wall $(CFLAGS) -c src/globals.c -o build/globals.o
 build/rng.o: mkdir src/rng.c src/rng.h

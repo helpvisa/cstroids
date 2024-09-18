@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
                 y_vel_r = rng(2, 1);
             }
             Vector2 vel_vec = {x_vel_r, y_vel_r};
-            Asteroid *roid = create_asteroid(roid_pos, vel_vec, 1, x_vel_r);
+            Asteroid *roid = create_asteroid(roid_pos, vel_vec, 1.6, x_vel_r);
             insert_asteroid_at_beginning(&asteroids_head, roid);
         } else {
             ticks_since_last_spawn += ticks_since_last_frame;

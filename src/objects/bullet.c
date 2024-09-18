@@ -6,7 +6,7 @@
 #include "asteroid.h"
 #include "../generic/collide.h"
 #include "../helpers/particle-helpers.h"
-#include <math.h>
+#include "../helpers/asteroid-helpers.h"
 
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
@@ -120,24 +120,12 @@ void update_bullet(struct BulletNode **ref) {
             if (collide_polygons(o, 4, (*ref)->bullet->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
                 bullet_count -= 1;
                 // spawn child asteroids
-                if (curr_roid->roid->size > 0.5) {
-                    for (int i = 0; i < 2; i ++) {
-                        float rand_x = ((float)rng(10, 0) - 5) / 10;
-                        float rand_y = ((float)rng(10, 0) - 5) / 10;
-                        Vector2 new_vel = {curr_roid->roid->velocity.x +
-                                               (*ref)->bullet->velocity.x / 10 +
-                                               rand_x * ((1.5 - curr_roid->roid->size) * 4),
-                                           curr_roid->roid->velocity.y +
-                                               (*ref)->bullet->velocity.y / 10 +
-                                               rand_y * ((1.5 - curr_roid->roid->size) * 4)};
-                        Vector2 new_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
-                        float new_size = curr_roid->roid->size - 0.2;
-                        Asteroid *new_roid = create_asteroid(new_pos, new_vel, new_size, new_vel.x);
-                        insert_asteroid_at_end(&asteroids_head, new_roid);
-                    }
+                if (curr_roid->roid->size > 0.8) {
+                    Vector2 bullet_influence = {(*ref)->bullet->velocity.x / 10, (*ref)->bullet->velocity.y / 10};
+                    spawn_child_asteroids(&asteroids_head, curr_roid->roid, bullet_influence, 0.4, 2);
                 }
                 // spawn fan of particles (asteroid)
-                Colour roid_part_col = {200, 60, 255, 255};
+                Colour roid_part_col = {200, 60, 200, 255};
                 Vector2 roid_part_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
                 create_particle_fan(&particles_head, 0.26, roid_part_pos, roid_part_col, 60, 4, 1.6, 20);
                 // spawn fan of particles (bullet)
