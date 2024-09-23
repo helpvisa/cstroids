@@ -15,6 +15,9 @@ struct ParticleNode *particles_head = NULL;
 struct AsteroidNode *asteroids_head = NULL;
 struct BulletNode *bullets_head = NULL;
 
+// game state
+enum game_state {TITLE, ACTIVE, OVER};
+
 // player
 Ship *player_ship = NULL;
 int player_is_alive = 1;

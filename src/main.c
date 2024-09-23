@@ -32,6 +32,9 @@ int main(int argc, char *argv[]) {
     // initialize random number generator
     init_rng();
 
+    // used for tracking game state
+    int prev_player_state = 1;
+
     // create a ship
     Vector2 init_pos = {DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0};
     Vector2 test_offsets[] = {
@@ -57,7 +60,7 @@ int main(int argc, char *argv[]) {
         last_ticks = SDL_GetTicks();
 
         // spawn asteroids
-        if (ticks_since_last_spawn > 1000 * secs_until_asteroid_spawn) {
+        if (player_is_alive && ticks_since_last_spawn > 1000 * secs_until_asteroid_spawn) {
             secs_until_asteroid_spawn = rng(18,6);
             ticks_since_last_spawn = 0;
             int top = rng(1, 0);
@@ -91,6 +94,7 @@ int main(int argc, char *argv[]) {
         update_particle_list(&particles_head);
         update_bullet_list(&bullets_head);
         update_asteroid_list(&asteroids_head);
+        prune_particle_list(&particles_head, 5000);
 
         // draw objects
         update_window();
@@ -104,6 +108,15 @@ int main(int argc, char *argv[]) {
         // present the final rendered scene
         // at a fixed rate of 60fps
         present_scene();
+
+        // perform some game state checks
+        // did the player just die?
+        if (!player_is_alive && prev_player_state) {
+            // do nothing for now
+            ;
+        }
+        // update vars used to track state in previous frame
+        prev_player_state = player_is_alive;
     }
 
     return 0;

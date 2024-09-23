@@ -72,6 +72,41 @@ void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode *
     free(current);
 }
 
+void remove_all_particles_from_list(struct ParticleNode **head) {
+    struct ParticleNode *current = *head;
+    while (current != NULL) {
+        *head = current->next;
+        free(current->part);
+        free(current);
+        current = *head;
+    }
+    *head = NULL;
+}
+
+// similar to remove_all_particles_from_list except iterates to a max count
+void prune_particle_list(struct ParticleNode **head, int max_count) {
+    struct ParticleNode *current = *head;
+    int count = 0;
+
+    while (current != NULL) {
+        current = current->next;
+        count++;
+    }
+    int to_remove = count - max_count;
+
+    if (to_remove > 0) {
+        current = *head;
+        int removal_idx = 0;
+        while (current != NULL && removal_idx < to_remove) {
+            *head = current->next;
+            free(current->part);
+            free(current);
+            removal_idx++;
+            current = *head;
+        }
+    }
+}
+
 void update_particle(struct ParticleNode **ref) {
     (*ref)->part->pos.x += (*ref)->part->velocity.x;
     (*ref)->part->pos.y += (*ref)->part->velocity.y;

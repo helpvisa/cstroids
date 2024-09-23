@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "../defs.h"
 #include "../structs.h"
 #include "../rng.h"
@@ -94,6 +95,18 @@ void remove_asteroid_from_list(struct AsteroidNode **head, struct AsteroidNode *
     free(current->roid->offsets);
     free(current->roid);
     free(current);
+}
+
+void remove_all_asteroids_from_list(struct AsteroidNode **head) {
+    struct AsteroidNode *current = *head;
+    while (current != NULL) {
+        *head = current->next;
+        free(current->roid->offsets);
+        free(current->roid);
+        free(current);
+        current = *head;
+    }
+    *head = NULL;
 }
 
 void update_asteroid(struct AsteroidNode **ref) {
