@@ -29,6 +29,12 @@ int main(int argc, char *argv[]) {
     init_SDL("CStroids");
     atexit(cleanup_SDL);
 
+    // parse argc and argv
+    int max_particle_count = 10000;
+    if (argc > 1) {
+        printf("value of argv[1] is %s", argv[1]);
+        max_particle_count = strtof(argv[1], NULL);
+    }
     // initialize random number generator
     init_rng();
 
@@ -94,7 +100,7 @@ int main(int argc, char *argv[]) {
         update_particle_list(&particles_head);
         update_bullet_list(&bullets_head);
         update_asteroid_list(&asteroids_head);
-        prune_particle_list(&particles_head, 5000);
+        prune_particle_list(&particles_head, max_particle_count);
 
         // draw objects
         update_window();
