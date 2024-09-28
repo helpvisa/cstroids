@@ -17,9 +17,9 @@ make STATIC=1
 Currently, static binaries can only be compiled on Linux (maybe FreeBSD will work too; it isn't something I've personally tested).
 
 ### FreeBSD
-If you're on FreeBSD, installing the above packages will still be a necessity, but the command changes:
+If you're on FreeBSD, GNU Make is also required. Install it along with SDL2 and use the following command:
 ``` sh
-make FREEBSD=1
+gmake FREEBSD=1
 sudo make install
 ```
 Compilation has not been tested on any of the other BSDs. Maybe you can try it and let me know?
