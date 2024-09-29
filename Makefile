@@ -90,7 +90,7 @@ mkdir:
 	mkdir -p ./build
 clean:
 	rm -rf ./build
-	rm ./$(OUTPUT).*
+	rm ./$(OUTPUT)
 flags:
 	@echo Using $(OS_FLAG) environment.
 	@echo LDLIBS: \"$(LDLIBS)\"
