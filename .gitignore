@@ -16,3 +16,6 @@ cstroids
 *.exe
 *.dll
 *.zip
+
+# patch files
+*.patch
