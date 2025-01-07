@@ -23,9 +23,9 @@ extern int player_is_alive;
 extern int screen_width;
 extern int screen_height;
 
-int main(int argc, char *argv[]) {
-    memset(&app, 0, sizeof(App));
+const unsigned int DELAY_TIME = 1000.0 / DESIRED_FPS;
 
+int main(int argc, char *argv[]) {
     init_SDL("CStroids");
     atexit(cleanup_SDL);
 
@@ -53,20 +53,15 @@ int main(int argc, char *argv[]) {
     player_ship = init_ship(init_pos, test_offsets, 5);
 
     // create an asteroid
-    int secs_until_asteroid_spawn = 2;
-    int ticks_since_last_spawn = 0;
+    unsigned int secs_until_asteroid_spawn = 2;
+    unsigned int ticks_since_last_spawn = 0;
 
-    int last_ticks = SDL_GetTicks();
+    unsigned int frame_start, frame_time = 0;
     while(1) {
-        // wait for fixed timestep
-        int ticks_since_last_frame = SDL_GetTicks() - last_ticks;
-        if (ticks_since_last_frame < 1000 / DESIRED_FPS) {
-            continue;
-        }
-        last_ticks = SDL_GetTicks();
+        frame_start = SDL_GetTicks();
 
         // spawn asteroids
-        if (player_is_alive && ticks_since_last_spawn > 1000 * secs_until_asteroid_spawn) {
+        if (player_is_alive && ticks_since_last_spawn > DESIRED_FPS * secs_until_asteroid_spawn) {
             secs_until_asteroid_spawn = rng(18,6);
             ticks_since_last_spawn = 0;
             int top = rng(1, 0);
@@ -86,7 +81,7 @@ int main(int argc, char *argv[]) {
             Asteroid *roid = create_asteroid(roid_pos, vel_vec, 1.6, x_vel_r);
             insert_asteroid_at_beginning(&asteroids_head, roid);
         } else {
-            ticks_since_last_spawn += ticks_since_last_frame;
+            ticks_since_last_spawn += frame_time;
         }
 
         // setup the bg and parse inputs
@@ -123,6 +118,12 @@ int main(int argc, char *argv[]) {
         }
         // update vars used to track state in previous frame
         prev_player_state = player_is_alive;
+
+        // fixed time-step
+        frame_time = SDL_GetTicks() - frame_start;
+        if (frame_time < DELAY_TIME) {
+            SDL_Delay((unsigned int)(DELAY_TIME - frame_time));
+        }
     }
 
     return 0;
