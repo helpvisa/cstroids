@@ -6,12 +6,15 @@
 #include "../helpers/particle-helpers.h"
 #include "particle.h"
 #include "bullet.h"
+#include "../region.h"
 #include <math.h>
 
 extern InputMap inputmap;
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
+
+extern struct Region *particles_region;
 
 extern float ratio;
 extern int bullet_count;
@@ -78,11 +81,12 @@ void update_ship(Ship *ship) {
                                 ship->pos.y + s * -10 + y_rand - 0.5};
         Vector2 part_vel = {ship->velocity.x + c * -4 + (x_rand - 0.5) * 2,
                             ship->velocity.y + s * -4 + (y_rand - 0.5) * 2};
-        Particle *new_part = create_particle(part_origin,
-                                                part_vel,
-                                                60 * 30,
-                                                col,
-                                                col_rand / 10);
+        Particle *new_part = create_or_reuse_particle(part_origin,
+                                                      part_vel,
+                                                      60 * 30,
+                                                      col,
+                                                      col_rand / 10,
+                                                      particles_region);
         insert_particle_at_end(&particles_head, new_part);
     }
     if (inputmap.left) {

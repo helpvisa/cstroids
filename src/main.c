@@ -1,3 +1,7 @@
+#define IMPLEMENT_REGIONS
+#define DEBUG_REGIONS
+#include "region.h"
+
 #include "defs.h"
 #include "structs.h"
 #include "rng.h"
@@ -17,6 +21,8 @@ extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
 
+extern struct Region *particles_region;
+
 extern Ship *player_ship;
 extern int player_is_alive;
 
@@ -26,6 +32,9 @@ extern int screen_height;
 const unsigned int DELAY_TIME = 1000.0 / DESIRED_FPS;
 
 int main(int argc, char *argv[]) {
+    // move cursor down two blocks for debug info
+    printf("\n\n");
+
     init_SDL("CStroids");
     atexit(cleanup_SDL);
 
@@ -35,6 +44,10 @@ int main(int argc, char *argv[]) {
         printf("value of argv[1] is %s", argv[1]);
         max_particle_count = strtof(argv[1], NULL);
     }
+
+    // create some arenas
+    particles_region = new_region(REGION_SIZE);
+
     // initialize random number generator
     init_rng();
 
@@ -95,7 +108,7 @@ int main(int argc, char *argv[]) {
         update_particle_list(&particles_head);
         update_bullet_list(&bullets_head);
         update_asteroid_list(&asteroids_head);
-        prune_particle_list(&particles_head, max_particle_count);
+        /* prune_particle_list(&particles_head, max_particle_count); */
 
         // draw objects
         update_window();
@@ -124,6 +137,14 @@ int main(int argc, char *argv[]) {
         if (frame_time < DELAY_TIME) {
             SDL_Delay((unsigned int)(DELAY_TIME - frame_time));
         }
+
+        // debug information
+        printf("\e[A\e[A");
+        printf("                           \n");
+        printf("                           \n");
+        printf("\e[A\e[A");
+        print_region(particles_region, 'k');
+        visualize_region(particles_region, 1024 * 32);
     }
 
     return 0;

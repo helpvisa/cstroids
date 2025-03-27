@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "structs.h"
 #include "objects/ship.h"
+#include "region.h"
 
 // rendering
 App app = {NULL, NULL};
@@ -14,6 +15,9 @@ int screen_height = DEFAULT_SCREEN_HEIGHT;
 struct ParticleNode *particles_head = NULL;
 struct AsteroidNode *asteroids_head = NULL;
 struct BulletNode *bullets_head = NULL;
+
+// regions
+struct Region *particles_region = NULL;
 
 // game state
 enum game_state {TITLE, ACTIVE, OVER};

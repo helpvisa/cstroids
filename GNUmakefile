@@ -80,7 +80,7 @@ build/globals.o: mkdir src/globals.c src/globals.h
 	$(CC) -Wall $(CFLAGS) -c src/globals.c -o build/globals.o
 build/rng.o: mkdir src/rng.c src/rng.h
 	$(CC) -Wall $(CFLAGS) -c src/rng.c -o build/rng.o
-build/main.o: mkdir src/main.c
+build/main.o: mkdir src/main.c src/region.h
 	$(CC) -Wall $(CFLAGS) -c src/main.c -o build/main.o
 mkdir:
 	mkdir -p ./build

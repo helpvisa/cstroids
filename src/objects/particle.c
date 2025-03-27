@@ -2,6 +2,7 @@
 #include "../structs.h"
 #include "../wrap_sdl/draw.h"
 #include "../generic/collide.h"
+#include "../region.h"
 
 extern struct AsteroidNode *asteroids_head;
 extern struct ParticleNode *particles_head;
@@ -10,8 +11,10 @@ extern struct BulletNode *bullets_head;
 extern float ratio;
 extern Ship *player_ship;
 
-Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour col, float size) {
-    Particle *part = malloc(sizeof(Particle));
+Particle *create_particle(Vector2 pos, Vector2 velocity,
+                          int lifetime, Colour col, float size,
+                          struct Region *region) {
+    Particle *part = region_alloc(region, sizeof(*part));
     part->pos = pos;
     part->velocity = velocity;
     part->lifetime = lifetime;
@@ -19,6 +22,31 @@ Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour co
     part->col = col;
     part->size = size;
     return part;
+}
+
+Particle *create_or_reuse_particle(Vector2 pos, Vector2 velocity,
+                                   int lifetime, Colour col, float size,
+                                   struct Region *region) {
+    Particle *to_return = NULL;
+    struct ParticleNode *current_node = particles_head;
+    while (current_node && current_node->part &&
+           current_node->part->lifetime > 0) {
+        current_node = current_node->next;
+    }
+
+    if (!current_node) {
+        to_return = create_particle(pos, velocity, lifetime,
+                                    col, size, region);
+    } else {
+        to_return = current_node->part;
+        to_return->pos = pos;
+        to_return->velocity = velocity;
+        to_return->lifetime = lifetime;
+        to_return->col = col;
+        to_return->size = size;
+    }
+
+    return to_return;
 }
 
 void insert_particle_at_beginning(struct ParticleNode **head, Particle *part) {
@@ -52,7 +80,7 @@ void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode *
     if (current != NULL && current->part == (*ref)->part) {
         *ref = current->next;
         *head = current->next;
-        free(current->part);
+        /* free(current->part); */
         free(current);
         return;
     }
@@ -68,7 +96,7 @@ void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode *
 
     prev->next = current->next;
     *ref = prev;
-    free(current->part);
+    /* free(current->part); */
     free(current);
 }
 
@@ -76,7 +104,7 @@ void remove_all_particles_from_list(struct ParticleNode **head) {
     struct ParticleNode *current = *head;
     while (current != NULL) {
         *head = current->next;
-        free(current->part);
+        /* free(current->part); */
         free(current);
         current = *head;
     }
@@ -99,7 +127,7 @@ void prune_particle_list(struct ParticleNode **head, int max_count) {
         int removal_idx = 0;
         while (current != NULL && removal_idx < to_remove) {
             *head = current->next;
-            free(current->part);
+            /* free(current->part); */
             free(current);
             removal_idx++;
             current = *head;
@@ -165,14 +193,16 @@ void update_particle(struct ParticleNode **ref) {
     if ((*ref)->part->col.a > 60) {
         (*ref)->part->col.a -= 1;
     }
-    if ((*ref)->part->life < 0) {
-        remove_particle_from_list(&particles_head, ref);
-    }
+    /* if ((*ref)->part->life < 0) { */
+    /*     remove_particle_from_list(&particles_head, ref); */
+    /* } */
 }
 
 void draw_particle(struct ParticleNode *ref) {
-    Vector2 point = {ref->part->pos.x, ref->part->pos.y};
-    render_point(point, ref->part->col, ref->part->size);
+    if (ref->part->life > 0) {
+        Vector2 point = {ref->part->pos.x, ref->part->pos.y};
+        render_point(point, ref->part->col, ref->part->size);
+    }
 }
 
 void update_particle_list(struct ParticleNode **head) {

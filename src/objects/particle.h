@@ -1,11 +1,16 @@
-#include "../structs.h"
-
 #ifndef PARTICLE_H_
 #define PARTICLE_H_
+#include "../structs.h"
+#include "../region.h"
 
 extern struct ParticleNode *particles_head;
 
-Particle *create_particle(Vector2 pos, Vector2 velocity, int lifetime, Colour col, float size);
+Particle *create_particle(Vector2 pos, Vector2 velocity,
+                          int lifetime, Colour col, float size,
+                          struct Region *region);
+Particle *create_or_reuse_particle(Vector2 pos, Vector2 velocity,
+                                   int lifetime, Colour col, float size,
+                                   struct Region *region);
 void insert_particle_at_beginning(struct ParticleNode **head, Particle *part);
 void insert_particle_at_end(struct ParticleNode **head, Particle *part);
 void remove_particle_from_list(struct ParticleNode **head, struct ParticleNode **ref);
