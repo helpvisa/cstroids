@@ -43,13 +43,14 @@ typedef struct {
     int shot_cooldown;
 } Ship;
 
-typedef struct {
+typedef struct Particle {
     Vector2 pos;
     Vector2 velocity;
     int lifetime;
     int life;
     Colour col;
     float size;
+    struct Particle *next;
 } Particle;
 
 struct ParticleNode {

@@ -7,6 +7,7 @@
 #include "particle.h"
 #include "bullet.h"
 #include "../region.h"
+#include "../manager.h"
 #include <math.h>
 
 extern InputMap inputmap;
@@ -38,7 +39,7 @@ Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
     return ship;
 }
 
-void update_ship(Ship *ship) {
+void update_ship(Ship *ship, struct GameManager *gm) {
     float amount_to_rotate = 0;
     float angle_rad = ship->angle * (PI / 180);
     float s = sin(angle_rad);
@@ -81,13 +82,11 @@ void update_ship(Ship *ship) {
                                 ship->pos.y + s * -10 + y_rand - 0.5};
         Vector2 part_vel = {ship->velocity.x + c * -4 + (x_rand - 0.5) * 2,
                             ship->velocity.y + s * -4 + (y_rand - 0.5) * 2};
-        Particle *new_part = create_or_reuse_particle(part_origin,
-                                                      part_vel,
-                                                      60 * 30,
-                                                      col,
-                                                      col_rand / 10,
-                                                      particles_region);
-        insert_particle_at_end(&particles_head, new_part);
+
+        request_new_particle(gm,
+                             part_origin, part_vel,
+                             60 *30,
+                             col, col_rand / 10);
     }
     if (inputmap.left) {
         ship->angle -= ship->rot_speed;
@@ -132,7 +131,7 @@ void update_ship(Ship *ship) {
             player_is_alive = 0;
             Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
             Colour fan_part_col = {200, 200, 200, 255};
-            create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55);
+            /* create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55); */
         }
         curr_roid = curr_roid->next;
     }

@@ -99,7 +99,7 @@ void update_bullet(struct BulletNode **ref) {
         // spawn fan of particles
         Colour fan_part_col = {60, 200, 60, 255};
         Vector2 fan_part_pos = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
-        create_particle_fan(&particles_head, 0.79, fan_part_pos, fan_part_col, 60, 4, 1, 55);
+        /* create_particle_fan(&particles_head, 0.79, fan_part_pos, fan_part_col, 60, 4, 1, 55); */
         // now delete
         remove_bullet_from_list(&bullets_head, ref);
         bullet_count -= 1;
@@ -127,11 +127,11 @@ void update_bullet(struct BulletNode **ref) {
                 // spawn fan of particles (asteroid)
                 Colour roid_part_col = {200, 60, 200, 255};
                 Vector2 roid_part_pos = {curr_roid->roid->pos.x, curr_roid->roid->pos.y};
-                create_particle_fan(&particles_head, 0.26, roid_part_pos, roid_part_col, 60, 4, 1.6, 20);
+                /* create_particle_fan(&particles_head, 0.26, roid_part_pos, roid_part_col, 60, 4, 1.6, 20); */
                 // spawn fan of particles (bullet)
                 Colour bul_part_col = {60, 200, 60, 255};
                 Vector2 bul_part_pos = {(*ref)->bullet->pos.x, (*ref)->bullet->pos.y};
-                create_particle_fan(&particles_head, 2.09, bul_part_pos, bul_part_col, 60, 4, 1, 55);
+                /* create_particle_fan(&particles_head, 2.09, bul_part_pos, bul_part_col, 60, 4, 1, 55); */
 
                 // remove bullet and asteroid from update lists
                 remove_asteroid_from_list(&asteroids_head, &curr_roid);

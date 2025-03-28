@@ -1,3 +1,6 @@
+#include <SDL2/SDL.h>
+#include <stdlib.h>
+
 #define IMPLEMENT_REGIONS
 #define DEBUG_REGIONS
 #include "region.h"
@@ -5,6 +8,7 @@
 #include "defs.h"
 #include "structs.h"
 #include "rng.h"
+#include "manager.h"
 #include "objects/particle.h"
 #include "objects/asteroid.h"
 #include "objects/bullet.h"
@@ -13,15 +17,11 @@
 #include "wrap_sdl/init.h"
 #include "wrap_sdl/input.h"
 #include "generic/collide.h"
-#include <SDL2/SDL.h>
-#include <stdlib.h>
 
 extern App app;
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
-
-extern struct Region *particles_region;
 
 extern Ship *player_ship;
 extern int player_is_alive;
@@ -41,12 +41,13 @@ int main(int argc, char *argv[]) {
     // parse argc and argv
     int max_particle_count = 10000;
     if (argc > 1) {
-        printf("value of argv[1] is %s", argv[1]);
+        printf("value of argv[1] is %s\n", argv[1]);
         max_particle_count = strtof(argv[1], NULL);
     }
 
-    // create some arenas
-    particles_region = new_region(REGION_SIZE);
+    // create the "game manager"
+    struct GameManager game_manager = gm_initialize(REGION_SIZE);
+    gm_init_particles(&game_manager, max_particle_count);
 
     // initialize random number generator
     init_rng();
@@ -74,8 +75,9 @@ int main(int argc, char *argv[]) {
         frame_start = SDL_GetTicks();
 
         // spawn asteroids
-        if (player_is_alive && ticks_since_last_spawn > DESIRED_FPS * secs_until_asteroid_spawn) {
-            secs_until_asteroid_spawn = rng(18,6);
+        if (player_is_alive &&
+            ticks_since_last_spawn > DESIRED_FPS * secs_until_asteroid_spawn) {
+            secs_until_asteroid_spawn = rng(10,1);
             ticks_since_last_spawn = 0;
             int top = rng(1, 0);
             int left = rng(1, 0);
@@ -94,7 +96,7 @@ int main(int argc, char *argv[]) {
             Asteroid *roid = create_asteroid(roid_pos, vel_vec, 1.6, x_vel_r);
             insert_asteroid_at_beginning(&asteroids_head, roid);
         } else {
-            ticks_since_last_spawn += frame_time;
+            ticks_since_last_spawn += 1;
         }
 
         // setup the bg and parse inputs
@@ -103,19 +105,18 @@ int main(int argc, char *argv[]) {
 
         // update entities
         if (player_is_alive) {
-            update_ship(player_ship);
+            update_ship(player_ship, &game_manager);
         }
-        update_particle_list(&particles_head);
         update_bullet_list(&bullets_head);
         update_asteroid_list(&asteroids_head);
-        /* prune_particle_list(&particles_head, max_particle_count); */
+        gm_update_all(&game_manager);
 
         // draw objects
         update_window();
-        draw_particle_list(particles_head);
         if (player_is_alive) {
             draw_ship(player_ship);
         }
+        gm_draw_all(game_manager);
         draw_bullet_list(bullets_head);
         draw_asteroid_list(asteroids_head);
 
@@ -139,12 +140,12 @@ int main(int argc, char *argv[]) {
         }
 
         // debug information
-        printf("\e[A\e[A");
-        printf("                           \n");
-        printf("                           \n");
-        printf("\e[A\e[A");
-        print_region(particles_region, 'k');
-        visualize_region(particles_region, 1024 * 32);
+        /* printf("\e[A\e[A"); */
+        /* printf("                           \n"); */
+        /* printf("                           \n"); */
+        /* printf("\e[A\e[A"); */
+        /* print_region(game_manager.particle_region, 'k'); */
+        /* visualize_region(game_manager.particle_region, 1024 * 32); */
     }
 
     return 0;

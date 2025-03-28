@@ -4,14 +4,14 @@
 
 /* set a default allocation size for arenas that can be overridden */
 #ifndef REGION_SIZE
-#define REGION_SIZE (1024 * 1024)
+#define REGION_SIZE (1024 * 256)
 #endif
 
 /* structures */
 struct Region {
     size_t capacity;
     size_t size;
-    void *data;
+    char *data;
 
     struct Region *next;
 };
@@ -115,20 +115,20 @@ void print_region(struct Region *region, char format) {
         size /= 1024;
         capacity /= 1024;
         free /= 1024;
-        postfix = "kb\0";
+        postfix = (char *)"kb\0";
         break;
     case 'm':
         size /= (1024 * 1024);
         capacity /= (1024 * 1024);
         free /= (1024 * 1024);
-        postfix = "mb\0";
+        postfix = (char *)"mb\0";
         break;
     default:
-        postfix = "b\0";
+        postfix = (char *)"b\0";
         break;
     }
 
-    printf("%d%s used | %d%s free | %d%s total\n",
+    printf("%8d%s used %8d%s free %8d%s total\n",
            size, postfix,
            free, postfix,
            capacity, postfix);

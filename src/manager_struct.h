@@ -1,0 +1,23 @@
+#ifndef MANAGER_STRUCT_H
+#define MANAGER_STRUCT_H
+#include "region.h"
+#include "structs.h"
+
+/* define the parameters of your game manager */
+struct GameManager {
+    /* memory regions */
+    struct Region *general_region;
+    struct Region *particle_region;
+    struct Region *asteroid_region;
+    struct Region *bullet_region;
+
+    /* pools of objects */
+    Particle *used_particles;
+    Particle *free_particles;
+    Asteroid *used_roids;
+    Asteroid *free_roids;
+    Bullet *used_bullets;
+    Bullet *free_bullets;
+};
+
+#endif

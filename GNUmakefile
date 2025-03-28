@@ -1,9 +1,14 @@
 .POSIX:
 .SUFFIXES:
+.PHONY: all install run clean
 CC = cc
 LDLIBS = 
 LDFLAGS = 
-CFLAGS =
+ifdef DEBUG
+	CFLAGS = -g3 -O0
+else
+	CFLAGS =
+endif
 OUTPUT = cstroids
 PREFIX = /usr/local
 
@@ -24,6 +29,8 @@ else
 endif
 
 all: cstroids
+run: cstroids
+	./cstroids
 install: cstroids
 	cp ./$(OUTPUT) $(PREFIX)/bin
 uninstall:
@@ -40,6 +47,7 @@ cstroids: build/draw.o\
 	build/asteroid-helpers.o\
 	build/globals.o\
 	build/rng.o\
+	build/manager.o\
 	build/main.o
 	$(CC) -Wall $(LDFLAGS) -o ./$(OUTPUT)\
 		build/draw.o\
@@ -54,6 +62,7 @@ cstroids: build/draw.o\
 		build/asteroid-helpers.o\
 		build/globals.o\
 		build/rng.o\
+		build/manager.o\
 		build/main.o\
 		$(LDLIBS)
 build/draw.o: mkdir src/wrap_sdl/draw.c src/wrap_sdl/draw.h
@@ -80,6 +89,8 @@ build/globals.o: mkdir src/globals.c src/globals.h
 	$(CC) -Wall $(CFLAGS) -c src/globals.c -o build/globals.o
 build/rng.o: mkdir src/rng.c src/rng.h
 	$(CC) -Wall $(CFLAGS) -c src/rng.c -o build/rng.o
+build/manager.o: mkdir src/manager.c src/manager.h src/manager_struct.h
+	$(CC) -Wall $(CFLAGS) -c src/manager.c -o build/manager.o
 build/main.o: mkdir src/main.c src/region.h
 	$(CC) -Wall $(CFLAGS) -c src/main.c -o build/main.o
 mkdir:

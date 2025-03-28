@@ -22,13 +22,14 @@ void create_particle_fan(struct ParticleNode **head, float shift, Vector2 pos, C
         Colour part_col = {col.r + y_rand_m, col.g + x_rand_m / 2 + y_rand_m / 2, col.b + x_rand_m, col.a};
 
         int particle_lifetime = lifetime * (10 + x_rand + y_rand);
-        Particle *new_part = create_or_reuse_particle(pos,
-                                                      part_vel,
-                                                      particle_lifetime,
-                                                      part_col,
-                                                      size + x_rand + y_rand,
-                                                      particles_region);
+
+        /* Particle *new_part = create_or_reuse_particle(pos, */
+        /*                                               part_vel, */
+        /*                                               particle_lifetime, */
+        /*                                               part_col, */
+        /*                                               size + x_rand + y_rand, */
+        /*                                               particles_region); */
         
-        insert_particle_at_end(head, new_part);
+        /* insert_particle_at_end(head, new_part); */
     }
 }
