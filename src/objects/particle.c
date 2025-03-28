@@ -5,8 +5,8 @@
 #include "../wrap_sdl/draw.h"
 #include "../generic/collide.h"
 #include "../region.h"
+#include "../manager.h"
 
-extern struct AsteroidNode *asteroids_head;
 extern struct ParticleNode *particles_head;
 extern struct BulletNode *bullets_head;
 
@@ -75,7 +75,7 @@ void remove_particle_from_list(Particle **head, Particle *ref) {
     }
 }
 
-void update_particle(Particle *part) {
+void update_particle(Particle *part, struct GameManager *gm) {
     part->pos.x += part->velocity.x;
     part->pos.y += part->velocity.y;
     // wrap part back across borders
@@ -102,17 +102,13 @@ void update_particle(Particle *part) {
         part->velocity.x += player_ship->velocity.x / 6;
         part->velocity.y += player_ship->velocity.y / 6;
     }
-    struct AsteroidNode *curr_roid = asteroids_head;
-    while (curr_roid != NULL) {
-        if (collide_point(part->pos,
-                          curr_roid->roid->offsets,
-                          curr_roid->roid->offset_count,
-                          curr_roid->roid->pos)) {
-            part->velocity.x += (part->pos.x - curr_roid->roid->pos.x) / 20;
-            part->velocity.y += (part->pos.y - curr_roid->roid->pos.y) / 20;
-        }
-        curr_roid = curr_roid->next;
+    // check if we collided into an asteroid
+    Asteroid *roid_col = request_roid_collision_point(gm, part->pos);
+    if (roid_col) {
+        part->velocity.x += (part->pos.x - roid_col->pos.x) / 20;
+        part->velocity.y += (part->pos.y - roid_col->pos.y) / 20;
     }
+
     struct BulletNode *curr_bullet = bullets_head;
     while (curr_bullet != NULL) {
         Vector2 b1 = {-6, -6};
@@ -146,10 +142,10 @@ void draw_particle(Particle *part) {
     render_point(point, part->col, part->size);
 }
 
-void update_particle_list(Particle *head) {
+void update_particle_list(Particle *head, struct GameManager *gm) {
     Particle *current = head;
     while (current) {
-        update_particle(current);
+        update_particle(current, gm);
         current = current->next;
     }
 }

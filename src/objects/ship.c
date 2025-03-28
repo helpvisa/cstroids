@@ -125,15 +125,13 @@ void update_ship(Ship *ship, struct GameManager *gm) {
     }
 
     // check for collision with asteroids
-    struct AsteroidNode *curr_roid = asteroids_head;
-    while (curr_roid != NULL) {
-        if (collide_polygons(ship->offsets, ship->offset_count, ship->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
-            player_is_alive = 0;
-            Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
-            Colour fan_part_col = {200, 200, 200, 255};
-            /* create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55); */
-        }
-        curr_roid = curr_roid->next;
+    /* should check poly col, not point col; this is temporary */
+    Asteroid *col_roid = request_roid_collision_point(gm, ship->pos);
+    if (col_roid) {
+        player_is_alive = 0;
+        Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
+        Colour fan_part_col = {200, 200, 200, 255};
+        /* create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55); */
     }
 }
 

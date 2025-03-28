@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
         // spawn asteroids
         if (player_is_alive &&
             ticks_since_last_spawn > DESIRED_FPS * secs_until_asteroid_spawn) {
-            secs_until_asteroid_spawn = rng(10,1);
+            secs_until_asteroid_spawn = rng(12,1);
             ticks_since_last_spawn = 0;
             int top = rng(1, 0);
             int left = rng(1, 0);
@@ -93,8 +93,8 @@ int main(int argc, char *argv[]) {
                 y_vel_r = rng(2, 1);
             }
             Vector2 vel_vec = {x_vel_r, y_vel_r};
-            Asteroid *roid = create_asteroid(roid_pos, vel_vec, 1.6, x_vel_r);
-            insert_asteroid_at_beginning(&asteroids_head, roid);
+            request_new_asteroid(&game_manager,
+                                 roid_pos, vel_vec, 1.6, x_vel_r);
         } else {
             ticks_since_last_spawn += 1;
         }
@@ -108,7 +108,6 @@ int main(int argc, char *argv[]) {
             update_ship(player_ship, &game_manager);
         }
         update_bullet_list(&bullets_head);
-        update_asteroid_list(&asteroids_head);
         gm_update_all(&game_manager);
 
         // draw objects
@@ -118,7 +117,6 @@ int main(int argc, char *argv[]) {
         }
         gm_draw_all(game_manager);
         draw_bullet_list(bullets_head);
-        draw_asteroid_list(asteroids_head);
 
         // present the final rendered scene
         // at a fixed rate of 60fps
@@ -144,8 +142,8 @@ int main(int argc, char *argv[]) {
         /* printf("                           \n"); */
         /* printf("                           \n"); */
         /* printf("\e[A\e[A"); */
-        /* print_region(game_manager.particle_region, 'k'); */
-        /* visualize_region(game_manager.particle_region, 1024 * 32); */
+        /* print_region(game_manager.asteroid_region, 'k'); */
+        /* visualize_region(game_manager.asteroid_region, 1024 * 32); */
     }
 
     return 0;

@@ -6,6 +6,7 @@
 /* define the parameters of your game manager */
 struct GameManager {
     /* memory regions */
+    struct Region *scratch_region;
     struct Region *general_region;
     struct Region *particle_region;
     struct Region *asteroid_region;

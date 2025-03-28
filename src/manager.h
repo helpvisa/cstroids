@@ -9,3 +9,8 @@ void gm_draw_all(struct GameManager gm);
 void request_new_particle(struct GameManager *gm,
                           Vector2 pos, Vector2 velocity,
                           int lifetime, Colour col, float size);
+void request_new_asteroid(struct GameManager *gm,
+                          Vector2 pos, Vector2 velocity,
+                          float size, float rot);
+
+Asteroid *request_roid_collision_point(struct GameManager *gm, Vector2 point);

@@ -2,6 +2,7 @@
 #define PARTICLE_H_
 #include "../structs.h"
 #include "../region.h"
+#include "../manager.h"
 
 extern struct ParticleNode *particles_head;
 
@@ -14,9 +15,9 @@ void insert_particle_at_beginning(Particle **head, Particle *part);
 void insert_particle_at_end(Particle **head, Particle *part);
 void remove_particle_from_list(Particle **head, Particle *ref);
 
-void update_particle(Particle *part);
+void update_particle(Particle *part, struct GameManager *gm);
 void draw_particle(Particle *part);
-void update_particle_list(Particle *head);
+void update_particle_list(Particle *head, struct GameManager *gm);
 void clean_particle_list(Particle **head, Particle **deposit);
 void draw_particle_list(Particle *head);
 

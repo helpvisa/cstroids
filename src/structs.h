@@ -50,27 +50,23 @@ typedef struct Particle {
     int life;
     Colour col;
     float size;
+
     struct Particle *next;
 } Particle;
 
-struct ParticleNode {
-    Particle *part;
-    struct ParticleNode *next;
-};
-
-typedef struct {
+typedef struct Asteroid {
     Vector2 pos;
     Vector2 velocity;
     float size;
     float rotation_speed; // in degrees per second
     Vector2 *offsets;
     int offset_count;
-} Asteroid;
 
-struct AsteroidNode {
-    Asteroid *roid;
-    struct AsteroidNode *next;
-};
+    int was_hit;
+    Vector2 hit_influence;
+
+    struct Asteroid *next;
+} Asteroid;
 
 typedef struct {
     Vector2 pos;
