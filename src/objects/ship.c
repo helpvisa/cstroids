@@ -1,3 +1,4 @@
+#include <math.h>
 #include "../defs.h"
 #include "../structs.h"
 #include "../rng.h"
@@ -6,36 +7,37 @@
 #include "../helpers/particle-helpers.h"
 #include "particle.h"
 #include "bullet.h"
-#include <math.h>
+#include "../region.h"
+#include "../manager.h"
 
 extern InputMap inputmap;
-extern struct ParticleNode *particles_head;
-extern struct AsteroidNode *asteroids_head;
-extern struct BulletNode *bullets_head;
 
 extern float ratio;
-extern int bullet_count;
 extern int player_is_alive;
 
-Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
-    Vector2 zero = {0, 0};
-
-    /* Ship ship = {pos, zero, 10, 0.03, 0, 3.5, offsets, offset_count}; */
-    Ship *ship = malloc(sizeof(Ship));
-    ship->pos = pos;
-    ship->velocity = zero;
-    ship->offsets = offsets;
-    ship->offset_count = offset_count;
-    ship->max_velocity = 10;
-    ship->speed = 0.08;
-    ship->angle = 0;
-    ship->rot_speed = 4.25;
-    ship->shot_cooldown = 0;
+Ship *create_ship(struct Region *region) {
+    Ship *ship = region_alloc(region, sizeof(*ship));
 
     return ship;
 }
 
-void update_ship(Ship *ship) {
+void set_ship(Ship *ship, Vector2 pos, Vector2 *offsets, int offset_count) {
+    if (ship) {
+        Vector2 zero = {0, 0};
+
+        ship->pos = pos;
+        ship->velocity = zero;
+        ship->offsets = offsets;
+        ship->offset_count = offset_count;
+        ship->max_velocity = 10;
+        ship->speed = 0.08;
+        ship->angle = 0;
+        ship->rot_speed = 4.25;
+        ship->shot_cooldown = 0;
+    }
+}
+
+void update_ship(Ship *ship, struct GameManager *gm) {
     float amount_to_rotate = 0;
     float angle_rad = ship->angle * (PI / 180);
     float s = sin(angle_rad);
@@ -44,14 +46,16 @@ void update_ship(Ship *ship) {
 
     if (inputmap.shoot) {
         // spawn bullets
-        if (bullet_count < 3 && ship->shot_cooldown < 1) {
+        if (ship->shot_cooldown < 1) {
             ship->shot_cooldown = 8;
-            bullet_count += 1;
-            Vector2 bullet_origin = {ship->pos.x + c * 10, ship->pos.y + s * 10};
+            Vector2 bullet_origin = {ship->pos.x + c * 10,
+                                     ship->pos.y + s * 10};
             Vector2 bullet_vel = {10 * c, 10 * s};
             Colour bullet_col = {0, 255, 0, 255};
-            Bullet *bullet = create_bullet(bullet_origin, bullet_vel, bullet_col, 40);
-            insert_bullet_at_end(&bullets_head, bullet);
+            int bullet_life = 40;
+            request_new_bullet(gm,
+                               bullet_origin, bullet_vel,
+                               bullet_col, bullet_life);
         }
     }
     if (inputmap.up) {
@@ -78,12 +82,11 @@ void update_ship(Ship *ship) {
                                 ship->pos.y + s * -10 + y_rand - 0.5};
         Vector2 part_vel = {ship->velocity.x + c * -4 + (x_rand - 0.5) * 2,
                             ship->velocity.y + s * -4 + (y_rand - 0.5) * 2};
-        Particle *new_part = create_particle(part_origin,
-                                                part_vel,
-                                                60 * 30,
-                                                col,
-                                                col_rand / 10);
-        insert_particle_at_end(&particles_head, new_part);
+
+        request_new_particle(gm,
+                             part_origin, part_vel,
+                             60 *30,
+                             col, col_rand / 10);
     }
     if (inputmap.left) {
         ship->angle -= ship->rot_speed;
@@ -122,15 +125,14 @@ void update_ship(Ship *ship) {
     }
 
     // check for collision with asteroids
-    struct AsteroidNode *curr_roid = asteroids_head;
-    while (curr_roid != NULL) {
-        if (collide_polygons(ship->offsets, ship->offset_count, ship->pos, curr_roid->roid->offsets, curr_roid->roid->offset_count, curr_roid->roid->pos)) {
-            player_is_alive = 0;
-            Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
-            Colour fan_part_col = {200, 200, 200, 255};
-            create_particle_fan(&particles_head, 0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55);
-        }
-        curr_roid = curr_roid->next;
+    /* TODO: should check poly col, not point col; this is temporary */
+    Asteroid *col_roid = request_roid_collision_point(gm, ship->pos);
+    if (col_roid) {
+        player_is_alive = 0;
+        Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
+        Colour fan_part_col = {200, 200, 200, 255};
+        create_particle_fan(0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55,
+                            gm);
     }
 }
 

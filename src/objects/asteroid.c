@@ -1,11 +1,14 @@
 #include <stdio.h>
+#include <math.h>
 #include "../defs.h"
 #include "../structs.h"
 #include "../rng.h"
 #include "../wrap_sdl/draw.h"
-#include <math.h>
+#include "../region.h"
+#include "../manager.h"
+#include "../helpers/asteroid-helpers.h"
+#include "../helpers/particle-helpers.h"
 
-extern struct AsteroidNode *asteroids_head;
 extern float ratio;
 
 // define a "standard asteroid offset look"
@@ -20,155 +23,160 @@ Vector2 roid_offsets[] = {
     {-15, -10}
 };
 
-Asteroid *create_asteroid(Vector2 pos, Vector2 velocity, float size, float rot) {
-    Asteroid *roid = malloc(sizeof(Asteroid));
-    roid->pos = pos;
-    roid->velocity = velocity;
-    roid->size = size;   // float multiplier for size
-    roid->rotation_speed = rot;
-    roid->offsets = malloc(sizeof(Vector2) * 8);
+Asteroid *create_asteroid(struct Region *region) {
+    Asteroid *roid = region_alloc(region, sizeof(*roid));
+    roid->offsets = region_alloc(region, sizeof(Vector2) * 8);
     roid->offset_count = 8;
-
-    // slightly randomize offsets for visual variation
-    for (int i = 0; i < roid->offset_count; i++) {
-        float rand_x = ((float)rng(10, 0) / 10 - 0.5) * 8;
-        float rand_y = ((float)rng(10, 0) / 10 - 0.5) * 8;
-        roid->offsets[i].x = roid_offsets[i].x + rand_x;
-        roid->offsets[i].y = roid_offsets[i].y + rand_y;
-        // apply size multiplier
-        roid->offsets[i].x *= roid->size;
-        roid->offsets[i].y *= roid->size;
-    }
 
     return roid;
 }
 
-void insert_asteroid_at_beginning(struct AsteroidNode **head, Asteroid *roid) {
-    struct AsteroidNode *new_node = malloc(sizeof(struct AsteroidNode));
-    new_node->roid = roid;
-    new_node->next = *head;
-    *head = new_node;
+void set_asteroid(Asteroid *roid,
+                  Vector2 pos, Vector2 velocity, float size, float rot) {
+    if (roid) {
+        Vector2 zero = {0};
+
+        roid->pos = pos;
+        roid->velocity = velocity;
+        roid->size = size;   // float multiplier for size
+        roid->rotation_speed = rot;
+        roid->was_hit = 0;
+        roid->hit_influence = zero;
+        roid->next = NULL;
+
+        // slightly randomize offsets for visual variation
+        for (int i = 0; i < roid->offset_count; i++) {
+            float rand_x = ((float)rng(10, 0) / 10 - 0.5) * 16;
+            float rand_y = ((float)rng(10, 0) / 10 - 0.5) * 16;
+            roid->offsets[i].x = roid_offsets[i].x + rand_x;
+            roid->offsets[i].y = roid_offsets[i].y + rand_y;
+            // apply size multiplier
+            roid->offsets[i].x *= roid->size;
+            roid->offsets[i].y *= roid->size;
+        }
+    }
 }
 
-void insert_asteroid_at_end(struct AsteroidNode **head, Asteroid *roid) {
-    struct AsteroidNode *new_node = malloc(sizeof(struct AsteroidNode));
-    new_node->roid = roid;
-    new_node->next = NULL;
+void insert_asteroid_at_beginning(Asteroid **head, Asteroid *roid) {
+    roid->next = *head;
+    *head = roid;
+}
 
-    if (*head == NULL) {
-        *head = new_node;
+void insert_asteroid_at_end(Asteroid **head, Asteroid *roid) {
+    roid->next = NULL;
+
+    if (!*head) {
+        *head = roid;
         return;
     }
 
     // iterate toward final node and add to end of list
-    struct AsteroidNode *current = *head;
-    while (current->next != NULL) {
+    Asteroid *current = *head;
+    while (current->next) {
         current = current->next;
     }
-    current->next = new_node;
+    current->next = roid;
 }
 
-void remove_asteroid_from_list(struct AsteroidNode **head, struct AsteroidNode **ref) {
-    struct AsteroidNode *current = *head, *prev;
+void remove_asteroid_from_list(Asteroid **head, Asteroid *ref) {
+    Asteroid *current = *head, *prev;
 
-    if (current != NULL && current->roid == (*ref)->roid) {
-        *ref = current->next;
-        *head = current->next;
-        free(current->roid->offsets);
-        free(current->roid);
-        free(current);
+    if (!ref) {
         return;
     }
 
-    while (current != NULL && current->roid != (*ref)->roid) {
+    if (*head && *head == ref) {
+        *head = (*head)->next;
+        return;
+    }
+
+    while (current && current != ref) {
         prev = current;
         current = current->next;
     }
 
-    // asteroid is not in the linked list
-    if (current == NULL) {
-        return;
+    if (current) {
+        prev->next = current->next;
     }
-
-    prev->next = current->next;
-    *ref = prev;
-    free(current->roid->offsets);
-    free(current->roid);
-    free(current);
 }
 
-void remove_all_asteroids_from_list(struct AsteroidNode **head) {
-    struct AsteroidNode *current = *head;
-    while (current != NULL) {
-        *head = current->next;
-        free(current->roid->offsets);
-        free(current->roid);
-        free(current);
-        current = *head;
-    }
-    *head = NULL;
-}
-
-void update_asteroid(struct AsteroidNode **ref) {
-    (*ref)->roid->pos.x += (*ref)->roid->velocity.x;
-    (*ref)->roid->pos.y += (*ref)->roid->velocity.y;
+void update_asteroid(Asteroid *roid, struct GameManager *gm) {
+    roid->pos.x += roid->velocity.x;
+    roid->pos.y += roid->velocity.y;
     // wrap roid around borders
-    if ((*ref)->roid->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 20) {
-        (*ref)->roid->pos.x = -20;
-    } else if ((*ref)->roid->pos.x < -20) {
-        (*ref)->roid->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 20;
+    if (roid->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 20) {
+        roid->pos.x = -20;
+    } else if (roid->pos.x < -20) {
+        roid->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 20;
     }
-    if ((*ref)->roid->pos.y > DEFAULT_SCREEN_HEIGHT + 20) {
-        (*ref)->roid->pos.y = -20;
-    } else if ((*ref)->roid->pos.y < -20) {
-        (*ref)->roid->pos.y = DEFAULT_SCREEN_HEIGHT + 20;
+    if (roid->pos.y > DEFAULT_SCREEN_HEIGHT + 20) {
+        roid->pos.y = -20;
+    } else if (roid->pos.y < -20) {
+        roid->pos.y = DEFAULT_SCREEN_HEIGHT + 20;
     }
     // rotate roid
-    float rotation_angle = (*ref)->roid->rotation_speed * (PI / 180);
+    float rotation_angle = roid->rotation_speed * (PI / 180);
     float s = sin(rotation_angle);
     float c = cos(rotation_angle);
-    for (int i = 0; i < (*ref)->roid->offset_count; i++) {
-        float new_x = c * (*ref)->roid->offsets[i].x - s * (*ref)->roid->offsets[i].y;
-        float new_y = s * (*ref)->roid->offsets[i].x + c * (*ref)->roid->offsets[i].y;
-        (*ref)->roid->offsets[i].x = new_x;
-        (*ref)->roid->offsets[i].y = new_y;
+    for (int i = 0; i < roid->offset_count; i++) {
+        float new_x = c * roid->offsets[i].x - s * roid->offsets[i].y;
+        float new_y = s * roid->offsets[i].x + c * roid->offsets[i].y;
+        roid->offsets[i].x = new_x;
+        roid->offsets[i].y = new_y;
+    }
+    // split roid
+    /* TODO: check here for a bullet collision and not in bullet,
+       will need to create new function to check poly against poly */
+    if (roid->was_hit) {
+        // spawn fan of particles (asteroid)
+        Colour roid_part_col = {200, 60, 200, 255};
+        create_particle_fan(2 * PI / (roid->size * 100),
+                            roid->hit_pos, roid_part_col, 60, 4, 10, 20,
+                            gm);
+        if (roid->size > 0.8) {
+            spawn_child_asteroids(gm, roid, 0.5, 2);
+        }
     }
 }
 
-void draw_asteroid(struct AsteroidNode *ref) {
-    Vector2 points[ref->roid->offset_count + 1];
-    for (int i = 0; i < ref->roid->offset_count; i++) {
-        Vector2 global_point_position = {ref->roid->pos.x + ref->roid->offsets[i].x,
-                                         ref->roid->pos.y + ref->roid->offsets[i].y};
+void draw_asteroid(Asteroid *roid) {
+    Vector2 points[roid->offset_count + 1];
+    for (int i = 0; i < roid->offset_count; i++) {
+        Vector2 global_point_position = {roid->pos.x + roid->offsets[i].x,
+                                         roid->pos.y + roid->offsets[i].y};
         points[i] = global_point_position;
     }
     // duplicate first point to close the poly
-    points[ref->roid->offset_count] = points[0];
+    points[roid->offset_count] = points[0];
 
     Colour col = {255, 100, 255, 255};
-    render_polygon(points, ref->roid->offset_count + 1, col);
+    render_polygon(points, roid->offset_count + 1, col);
 }
 
-void update_asteroid_list(struct AsteroidNode **head) {
-    if (*head == NULL) {
-        return;
-    }
+void update_asteroid_list(Asteroid *head, struct GameManager *gm) {
+    Asteroid *current = head;
 
-    // iterate thru linked list
-    struct AsteroidNode *current = *head;
-    while (current != NULL) {
-        update_asteroid(&current);
+    while (current) {
+        update_asteroid(current, gm);
         current = current->next;
     }
 }
 
-void draw_asteroid_list(struct AsteroidNode *head) {
-    if (head == NULL) {
-        return;
-    }
+void clean_asteroid_list(Asteroid **head, Asteroid **deposit) {
+    Asteroid *current = *head;
 
-    struct AsteroidNode *current = head;
-    while (current != NULL) {
+    while (current) {
+        if (current->was_hit) {
+            remove_asteroid_from_list(head, current);
+            insert_asteroid_at_end(deposit, current);
+        }
+        current = current->next;
+    }
+}
+
+void draw_asteroid_list(Asteroid *head) {
+    Asteroid *current = head;
+    while (current) {
         draw_asteroid(current);
         current = current->next;
     }

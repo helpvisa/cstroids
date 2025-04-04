@@ -1,7 +1,6 @@
-#include "structs.h"
-
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
+#include "structs.h"
 
 // rendering
 extern App app;
@@ -15,6 +14,9 @@ extern int screen_height;
 extern struct ParticleNode *particles_head;
 extern struct AsteroidNode *asteroids_head;
 extern struct BulletNode *bullets_head;
+
+// regions
+extern struct Region *particles_region;
 
 // player
 extern Ship *player_ship;

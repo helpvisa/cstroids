@@ -12,4 +12,7 @@
 // processing
 #define DESIRED_FPS 60
 
+// gameplay
+#define MAX_BULLETS 3
+
 #endif

@@ -43,44 +43,39 @@ typedef struct {
     int shot_cooldown;
 } Ship;
 
-typedef struct {
+typedef struct Particle {
     Vector2 pos;
     Vector2 velocity;
     int lifetime;
     int life;
     Colour col;
     float size;
+
+    struct Particle *next;
 } Particle;
 
-struct ParticleNode {
-    Particle *part;
-    struct ParticleNode *next;
-};
-
-typedef struct {
+typedef struct Asteroid {
     Vector2 pos;
     Vector2 velocity;
     float size;
     float rotation_speed; // in degrees per second
     Vector2 *offsets;
     int offset_count;
+
+    int was_hit;
+    Vector2 hit_influence;
+    Vector2 hit_pos;
+
+    struct Asteroid *next;
 } Asteroid;
 
-struct AsteroidNode {
-    Asteroid *roid;
-    struct AsteroidNode *next;
-};
-
-typedef struct {
+typedef struct Bullet {
     Vector2 pos;
     Vector2 velocity;
     Colour col;
     int life;
-} Bullet;
 
-struct BulletNode {
-    Bullet *bullet;
-    struct BulletNode *next;
-};
+    struct Bullet *next;
+} Bullet;
 
 #endif
