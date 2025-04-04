@@ -68,16 +68,13 @@ typedef struct Asteroid {
     struct Asteroid *next;
 } Asteroid;
 
-typedef struct {
+typedef struct Bullet {
     Vector2 pos;
     Vector2 velocity;
     Colour col;
     int life;
-} Bullet;
 
-struct BulletNode {
-    Bullet *bullet;
-    struct BulletNode *next;
-};
+    struct Bullet *next;
+} Bullet;
 
 #endif

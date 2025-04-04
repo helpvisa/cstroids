@@ -6,7 +6,6 @@
 #include "../wrap_sdl/draw.h"
 #include "../region.h"
 
-extern struct AsteroidNode *asteroids_head;
 extern float ratio;
 
 // define a "standard asteroid offset look"

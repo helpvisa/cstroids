@@ -11,32 +11,30 @@
 #include <math.h>
 
 extern InputMap inputmap;
-extern struct ParticleNode *particles_head;
-extern struct AsteroidNode *asteroids_head;
-extern struct BulletNode *bullets_head;
-
-extern struct Region *particles_region;
 
 extern float ratio;
-extern int bullet_count;
 extern int player_is_alive;
 
-Ship *init_ship(Vector2 pos, Vector2 *offsets, int offset_count) {
-    Vector2 zero = {0, 0};
-
-    /* Ship ship = {pos, zero, 10, 0.03, 0, 3.5, offsets, offset_count}; */
-    Ship *ship = malloc(sizeof(Ship));
-    ship->pos = pos;
-    ship->velocity = zero;
-    ship->offsets = offsets;
-    ship->offset_count = offset_count;
-    ship->max_velocity = 10;
-    ship->speed = 0.08;
-    ship->angle = 0;
-    ship->rot_speed = 4.25;
-    ship->shot_cooldown = 0;
+Ship *create_ship(struct Region *region) {
+    Ship *ship = region_alloc(region, sizeof(*ship));
 
     return ship;
+}
+
+void set_ship(Ship *ship, Vector2 pos, Vector2 *offsets, int offset_count) {
+    if (ship) {
+        Vector2 zero = {0, 0};
+
+        ship->pos = pos;
+        ship->velocity = zero;
+        ship->offsets = offsets;
+        ship->offset_count = offset_count;
+        ship->max_velocity = 10;
+        ship->speed = 0.08;
+        ship->angle = 0;
+        ship->rot_speed = 4.25;
+        ship->shot_cooldown = 0;
+    }
 }
 
 void update_ship(Ship *ship, struct GameManager *gm) {
@@ -48,14 +46,16 @@ void update_ship(Ship *ship, struct GameManager *gm) {
 
     if (inputmap.shoot) {
         // spawn bullets
-        if (bullet_count < 3 && ship->shot_cooldown < 1) {
+        if (ship->shot_cooldown < 1) {
             ship->shot_cooldown = 8;
-            bullet_count += 1;
-            Vector2 bullet_origin = {ship->pos.x + c * 10, ship->pos.y + s * 10};
+            Vector2 bullet_origin = {ship->pos.x + c * 10,
+                                     ship->pos.y + s * 10};
             Vector2 bullet_vel = {10 * c, 10 * s};
             Colour bullet_col = {0, 255, 0, 255};
-            Bullet *bullet = create_bullet(bullet_origin, bullet_vel, bullet_col, 40);
-            insert_bullet_at_end(&bullets_head, bullet);
+            int bullet_life = 40;
+            request_new_bullet(gm,
+                               bullet_origin, bullet_vel,
+                               bullet_col, bullet_life);
         }
     }
     if (inputmap.up) {

@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
     // create the "game manager"
     struct GameManager game_manager = gm_initialize(REGION_SIZE);
-    gm_init_particles(&game_manager, max_particle_count);
+    gm_init_all(&game_manager, max_particle_count, MAX_BULLETS);
 
     // initialize random number generator
     init_rng();
@@ -64,7 +64,8 @@ int main(int argc, char *argv[]) {
         {-10, 5},
         {10, 0}
     };
-    player_ship = init_ship(init_pos, test_offsets, 5);
+    player_ship = create_ship(game_manager.general_region);
+    set_ship(player_ship, init_pos, test_offsets, 5);
 
     // create an asteroid
     unsigned int secs_until_asteroid_spawn = 2;
@@ -107,7 +108,6 @@ int main(int argc, char *argv[]) {
         if (player_is_alive) {
             update_ship(player_ship, &game_manager);
         }
-        update_bullet_list(&bullets_head);
         gm_update_all(&game_manager);
 
         // draw objects
@@ -116,7 +116,6 @@ int main(int argc, char *argv[]) {
             draw_ship(player_ship);
         }
         gm_draw_all(game_manager);
-        draw_bullet_list(bullets_head);
 
         // present the final rendered scene
         // at a fixed rate of 60fps
