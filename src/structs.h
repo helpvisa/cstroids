@@ -64,6 +64,7 @@ typedef struct Asteroid {
 
     int was_hit;
     Vector2 hit_influence;
+    Vector2 hit_pos;
 
     struct Asteroid *next;
 } Asteroid;

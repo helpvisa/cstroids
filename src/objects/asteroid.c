@@ -5,6 +5,9 @@
 #include "../rng.h"
 #include "../wrap_sdl/draw.h"
 #include "../region.h"
+#include "../manager.h"
+#include "../helpers/asteroid-helpers.h"
+#include "../helpers/particle-helpers.h"
 
 extern float ratio;
 
@@ -97,7 +100,7 @@ void remove_asteroid_from_list(Asteroid **head, Asteroid *ref) {
     }
 }
 
-void update_asteroid(Asteroid *roid) {
+void update_asteroid(Asteroid *roid, struct GameManager *gm) {
     roid->pos.x += roid->velocity.x;
     roid->pos.y += roid->velocity.y;
     // wrap roid around borders
@@ -122,10 +125,18 @@ void update_asteroid(Asteroid *roid) {
         roid->offsets[i].y = new_y;
     }
     // split roid
-    /* if (roid->was_hit) { */
-    /*     if (roid->size > 0.8) { */
-    /*     } */
-    /* } */
+    /* TODO: check here for a bullet collision and not in bullet,
+       will need to create new function to check poly against poly */
+    if (roid->was_hit) {
+        // spawn fan of particles (asteroid)
+        Colour roid_part_col = {200, 60, 200, 255};
+        create_particle_fan(2 * PI / (roid->size * 100),
+                            roid->hit_pos, roid_part_col, 60, 4, 10, 20,
+                            gm);
+        if (roid->size > 0.8) {
+            spawn_child_asteroids(gm, roid, 0.5, 2);
+        }
+    }
 }
 
 void draw_asteroid(Asteroid *roid) {
@@ -142,11 +153,11 @@ void draw_asteroid(Asteroid *roid) {
     render_polygon(points, roid->offset_count + 1, col);
 }
 
-void update_asteroid_list(Asteroid *head) {
+void update_asteroid_list(Asteroid *head, struct GameManager *gm) {
     Asteroid *current = head;
 
     while (current) {
-        update_asteroid(current);
+        update_asteroid(current, gm);
         current = current->next;
     }
 }

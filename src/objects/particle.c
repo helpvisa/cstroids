@@ -107,16 +107,11 @@ void update_particle(Particle *part, struct GameManager *gm) {
     }
 
     // TODO: bullets affect our trajectory
-    /* Bullet *bullet_col = request_bullet_collision_point(gm, part->pos); */
-    /* Vector2 b1 = {-6, -6}; */
-    /* Vector2 b2 = { 6, -6}; */
-    /* Vector2 b3 = { 6,  6}; */
-    /* Vector2 b4 = { 6,  6}; */
-    /* Vector2 o[4] = {b1, b2, b3, b4}; */
-    /* if (collide_point(part->pos, o, 4, curr_bullet->bullet->pos)) { */
-    /*     part->velocity.x += curr_bullet->bullet->velocity.x / 6; */
-    /*     part->velocity.y += curr_bullet->bullet->velocity.y / 6; */
-    /* } */
+    Bullet *bullet_col = request_bullet_collision_point(gm, part->pos, 6);
+    if (bullet_col) {
+        part->velocity.x += bullet_col->velocity.x / 6;
+        part->velocity.y += bullet_col->velocity.y / 6;
+    }
     // decay
     part->life -= 1;
     float decay = ((float)part->life / part->lifetime);

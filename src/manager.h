@@ -18,3 +18,5 @@ void request_new_bullet(struct GameManager *gm,
                         Vector2 pos, Vector2 velocity, Colour col, int life);
 
 Asteroid *request_roid_collision_point(struct GameManager *gm, Vector2 point);
+Bullet *request_bullet_collision_point(struct GameManager *gm,
+                                       Vector2 point, float bullet_size);

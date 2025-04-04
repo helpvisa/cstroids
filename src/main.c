@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
             }
             Vector2 vel_vec = {x_vel_r, y_vel_r};
             request_new_asteroid(&game_manager,
-                                 roid_pos, vel_vec, 1.6, x_vel_r);
+                                 roid_pos, vel_vec, 1.6, vel_vec.x);
         } else {
             ticks_since_last_spawn += 1;
         }

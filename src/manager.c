@@ -58,7 +58,8 @@ void gm_update_all(struct GameManager *gm) {
     clean_particle_list(&gm->used_particles, &gm->free_particles);
 
     /* update asteroids */
-    update_asteroid_list(gm->used_roids);
+    update_asteroid_list(gm->used_roids, gm);
+    clean_asteroid_list(&gm->used_roids, &gm->free_roids);
 
     /* update bullets */
     update_bullet_list(gm->used_bullets, gm);
@@ -127,6 +128,27 @@ Asteroid *request_roid_collision_point(struct GameManager *gm, Vector2 point) {
     while (current) {
         if (collide_point(point,
                           current->offsets, current->offset_count,
+                          current->pos)) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+Bullet *request_bullet_collision_point(struct GameManager *gm,
+                                       Vector2 point, float bullet_size) {
+    Bullet *current = gm->used_bullets;
+    /* artificially expand bullet size */
+    Vector2 b1 = {-bullet_size, -bullet_size};
+    Vector2 b2 = { bullet_size, -bullet_size};
+    Vector2 b3 = { bullet_size,  bullet_size};
+    Vector2 b4 = { bullet_size,  bullet_size};
+    Vector2 o[4] = {b1, b2, b3, b4};
+
+    while (current) {
+        if (collide_point(point,
+                          o, 4,
                           current->pos)) {
             return current;
         }
