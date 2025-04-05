@@ -115,6 +115,9 @@ void update_particle(Particle *part, struct GameManager *gm) {
     // decay
     part->life -= 1;
     float decay = ((float)part->life / part->lifetime);
+    if (decay < 0) {
+        decay = 0;
+    }
     /* part->size *= decay; */
     if (part->size > 2) {
         part->size -= 0.25;
