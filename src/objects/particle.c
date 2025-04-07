@@ -118,12 +118,11 @@ void update_particle(Particle *part, struct GameManager *gm) {
     if (decay < 0) {
         decay = 0;
     }
-    /* part->size *= decay; */
-    if (part->size > 2) {
+    if (part->size > 1) {
         part->size -= 0.25;
     } else {
-        part->size = 2;
-        part->size *= decay;
+        part->size = 1;
+        /* part->size = 1 * decay; */
     }
     if (part->col.a > 60) {
         part->col.a -= 1;

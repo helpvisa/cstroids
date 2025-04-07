@@ -126,7 +126,10 @@ void update_ship(Ship *ship, struct GameManager *gm) {
 
     // check for collision with asteroids
     /* TODO: should check poly col, not point col; this is temporary */
-    Asteroid *col_roid = request_roid_collision_point(gm, ship->pos);
+    Asteroid *col_roid = request_roid_collision_poly(gm,
+                                                     ship->offsets,
+                                                     ship->offset_count,
+                                                     ship->pos);
     if (col_roid) {
         player_is_alive = 0;
         Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};

@@ -136,6 +136,21 @@ Asteroid *request_roid_collision_point(struct GameManager *gm, Vector2 point) {
     return NULL;
 }
 
+Asteroid *request_roid_collision_poly(struct GameManager *gm,
+                                      Vector2 *offsets, int offset_count,
+                                      Vector2 position) {
+    Asteroid *current = gm->used_roids;
+    while (current) {
+        if (collide_polygons(offsets, offset_count, position,
+                             current->offsets, current->offset_count,
+                             current->pos)) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
 Bullet *request_bullet_collision_point(struct GameManager *gm,
                                        Vector2 point, float bullet_size) {
     Bullet *current = gm->used_bullets;
