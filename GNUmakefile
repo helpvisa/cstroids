@@ -48,7 +48,8 @@ cstroids: build/draw.o\
 	build/globals.o\
 	build/rng.o\
 	build/manager.o\
-	build/main.o
+	build/main.o \
+	build/game.o
 	$(CC) -Wall $(LDFLAGS) -o ./$(OUTPUT)\
 		build/draw.o\
 		build/init.o\
@@ -64,6 +65,7 @@ cstroids: build/draw.o\
 		build/rng.o\
 		build/manager.o\
 		build/main.o\
+		build/game.o\
 		$(LDLIBS)
 build/draw.o: mkdir src/wrap_sdl/draw.c src/wrap_sdl/draw.h
 	$(CC) -Wall $(CFLAGS) -c src/wrap_sdl/draw.c -o build/draw.o
@@ -93,6 +95,8 @@ build/manager.o: mkdir src/manager.c src/manager.h src/manager_struct.h
 	$(CC) -Wall $(CFLAGS) -c src/manager.c -o build/manager.o
 build/main.o: mkdir src/main.c src/region.h
 	$(CC) -Wall $(CFLAGS) -c src/main.c -o build/main.o
+build/game.o: mkdir src/game.c src/game.h src/structs.h src/manager.h
+	$(CC) -Wall $(CFLAGS) -c src/game.c -o build/game.o
 mkdir:
 	mkdir -p ./build
 clean:

@@ -17,11 +17,10 @@
 #include "wrap_sdl/init.h"
 #include "wrap_sdl/input.h"
 #include "generic/collide.h"
+#include "game.h"
 
 extern App app;
-extern struct ParticleNode *particles_head;
-extern struct AsteroidNode *asteroids_head;
-extern struct BulletNode *bullets_head;
+extern InputMap inputmap;
 
 extern Ship *player_ship;
 extern int player_is_alive;
@@ -74,6 +73,20 @@ int main(int argc, char *argv[]) {
     unsigned int frame_start, frame_time = 0;
     while(1) {
         frame_start = SDL_GetTicks();
+
+        // reset the game
+        if (inputmap.reset) {
+            inputmap.reset = 0;
+            Vector2 test_offsets[] = {
+                {-10, -5},
+                {-6, -4},
+                {-6, 4},
+                {-10, 5},
+                {10, 0}
+            };
+            reset_game(&game_manager, player_ship, test_offsets,
+                       &player_is_alive, init_pos);
+        }
 
         // spawn asteroids
         if (player_is_alive &&
@@ -137,12 +150,13 @@ int main(int argc, char *argv[]) {
         }
 
         // debug information
-        /* printf("\e[A\e[A"); */
-        /* printf("                           \n"); */
+        printf("\e[A\e[A");
+        printf("                           \n");
         /* printf("                           \n"); */
         /* printf("\e[A\e[A"); */
         /* print_region(game_manager.asteroid_region, 'k'); */
         /* visualize_region(game_manager.asteroid_region, 1024 * 32); */
+        printf("Score: %20d\n", game_manager.score);
     }
 
     return 0;

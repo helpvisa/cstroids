@@ -10,6 +10,8 @@
 
 struct GameManager gm_initialize(size_t region_size) {
     struct GameManager new_manager = {0};
+    new_manager.region_size = region_size;
+
     /* scratch_region can be used for stuff like returning a list of
        collisions between objects; resets each update loop */
     new_manager.scratch_region = new_region(region_size);
@@ -31,6 +33,10 @@ struct GameManager gm_initialize(size_t region_size) {
 void gm_init_all(struct GameManager *gm,
                  int number_of_particles,
                  int number_of_bullets) {
+    gm->number_of_particles = number_of_particles;
+    gm->number_of_bullets = number_of_bullets;
+    gm->score = 0;
+
     for (int i = 0; i < number_of_particles; i++) {
         Particle *new_part = create_particle(gm->particle_region);
         insert_particle_at_end(&gm->free_particles, new_part);
@@ -49,9 +55,24 @@ void gm_init_all(struct GameManager *gm,
     }
 }
 
+void gm_reset(struct GameManager *gm) {
+    region_reset(gm->particle_region, 0);
+    region_reset(gm->asteroid_region, 0);
+    region_reset(gm->bullet_region, 0);
+
+    gm->free_particles = NULL;
+    gm->free_roids = NULL;
+    gm->free_bullets = NULL;
+    gm->used_particles = NULL;
+    gm->used_roids = NULL;
+    gm->used_bullets = NULL;
+
+    gm_init_all(gm, gm->number_of_particles, gm->number_of_bullets);
+}
+
 void gm_update_all(struct GameManager *gm) {
     /* reset scratch region */
-    region_reset(gm->scratch_region);
+    region_reset(gm->scratch_region, 0);
     
     /* update particles */
     update_particle_list(gm->used_particles, gm);
@@ -170,4 +191,8 @@ Bullet *request_bullet_collision_point(struct GameManager *gm,
         current = current->next;
     }
     return NULL;
+}
+
+void request_score_change(struct GameManager *gm, int change_by) {
+    gm->score += change_by;
 }

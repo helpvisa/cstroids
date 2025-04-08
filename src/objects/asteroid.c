@@ -136,6 +136,8 @@ void update_asteroid(Asteroid *roid, struct GameManager *gm) {
         if (roid->size > 0.8) {
             spawn_child_asteroids(gm, roid, 0.5, 2);
         }
+        // increase the score
+        request_score_change(gm, BASE_SCORE * (2 - roid->size));
     }
 }
 

@@ -4,6 +4,8 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
+extern InputMap inputmap;
+
 InputMap init_inputmap();
 void key_down(SDL_KeyboardEvent *event);
 void key_up(SDL_KeyboardEvent *event);

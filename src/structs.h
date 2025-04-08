@@ -9,6 +9,7 @@ typedef struct {
     int right;
     int up;
     int shoot;
+    int reset;
 } InputMap;
 
 // math

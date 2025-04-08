@@ -5,6 +5,11 @@
 
 /* define the parameters of your game manager */
 struct GameManager {
+    /* info about this manager */
+    size_t region_size;
+    int number_of_particles;
+    int number_of_bullets;
+    
     /* memory regions */
     struct Region *scratch_region;
     struct Region *general_region;
@@ -19,6 +24,10 @@ struct GameManager {
     Asteroid *free_roids;
     Bullet *used_bullets;
     Bullet *free_bullets;
+
+    /* game globals, like players */
+    Ship player_ship;
+    int score;
 };
 
 #endif

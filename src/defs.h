@@ -14,5 +14,6 @@
 
 // gameplay
 #define MAX_BULLETS 3
+#define BASE_SCORE 100
 
 #endif

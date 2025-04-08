@@ -5,6 +5,7 @@ struct GameManager gm_initialize(size_t region_size);
 void gm_init_all(struct GameManager *gm,
                  int number_of_particles,
                  int number_of_bullets);
+void gm_reset(struct GameManager *gm);
 void gm_update_all(struct GameManager *gm);
 void gm_draw_all(struct GameManager gm);
 
@@ -23,3 +24,5 @@ Asteroid *request_roid_collision_poly(struct GameManager *gm,
                                       Vector2 position);
 Bullet *request_bullet_collision_point(struct GameManager *gm,
                                        Vector2 point, float bullet_size);
+
+void request_score_change(struct GameManager *gm, int change_by);

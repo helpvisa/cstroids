@@ -37,6 +37,20 @@ void set_ship(Ship *ship, Vector2 pos, Vector2 *offsets, int offset_count) {
     }
 }
 
+void rotate_ship(Ship *ship, float amount_to_rotate) {
+    float rotation_angle = amount_to_rotate * (PI / 180);
+    float rs = sin(rotation_angle);
+    float rc = cos(rotation_angle);
+
+    for (int i = 0; i < ship->offset_count; i++) {
+        // rotate
+        float new_x = rc * ship->offsets[i].x - rs * ship->offsets[i].y;
+        float new_y = rs * ship->offsets[i].x + rc * ship->offsets[i].y;
+        ship->offsets[i].x = new_x;
+        ship->offsets[i].y = new_y;
+    }
+}
+
 void update_ship(Ship *ship, struct GameManager *gm) {
     float amount_to_rotate = 0;
     float angle_rad = ship->angle * (PI / 180);
@@ -97,17 +111,7 @@ void update_ship(Ship *ship, struct GameManager *gm) {
         amount_to_rotate += ship->rot_speed;
     }
 
-    float rotation_angle = amount_to_rotate * (PI / 180);
-    float rs = sin(rotation_angle);
-    float rc = cos(rotation_angle);
-
-    for (int i = 0; i < ship->offset_count; i++) {
-        // rotate
-        float new_x = rc * ship->offsets[i].x - rs * ship->offsets[i].y;
-        float new_y = rs * ship->offsets[i].x + rc * ship->offsets[i].y;
-        ship->offsets[i].x = new_x;
-        ship->offsets[i].y = new_y;
-    }
+    rotate_ship(ship, amount_to_rotate);
 
     // move ship based on velocity
     ship->pos.x += ship->velocity.x;
@@ -134,7 +138,7 @@ void update_ship(Ship *ship, struct GameManager *gm) {
         player_is_alive = 0;
         Vector2 fan_part_pos = {ship->pos.x, ship->pos.y};
         Colour fan_part_col = {200, 200, 200, 255};
-        create_particle_fan(0.005, fan_part_pos, fan_part_col, 1800, 8, 20, 55,
+        create_particle_fan(0.004, fan_part_pos, fan_part_col, 1800, 8, 20, 55,
                             gm);
     }
 }
