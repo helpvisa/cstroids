@@ -73,65 +73,71 @@ void remove_particle_from_list(Particle **head, Particle *ref) {
 }
 
 void update_particle(Particle *part, struct GameManager *gm) {
-    part->pos.x += part->velocity.x;
-    part->pos.y += part->velocity.y;
-    // wrap part back across borders
-    if (part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
-        part->pos.x = -10;
-    } else if (part->pos.x < -10) {
-        part->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10;
-    }
-    if (part->pos.y > DEFAULT_SCREEN_HEIGHT + 10) {
-        part->pos.y = -10;
-    } else if (part->pos.y < -10) {
-        part->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
-    }
-    // friction
-    part->velocity.x *= 0.96;
-    part->velocity.y *= 0.96;
-    part->velocity.x += 0.001;
-    part->velocity.y += 0.001;
-    // bump from ship, asteroids, bullets
-    if (collide_point(part->pos,
-                      player_ship->offsets,
-                      player_ship->offset_count,
-                      player_ship->pos)) {
-        part->velocity.x += player_ship->velocity.x / 6;
-        part->velocity.y += player_ship->velocity.y / 6;
-    }
-    // check if we collided into an asteroid
-    Asteroid *roid_col = request_roid_collision_point(gm, part->pos);
-    if (roid_col) {
-        part->velocity.x += (part->pos.x - roid_col->pos.x) / 20;
-        part->velocity.y += (part->pos.y - roid_col->pos.y) / 20;
-    }
+    if (part->life > 0) {
+        part->pos.x += part->velocity.x;
+        part->pos.y += part->velocity.y;
+        // wrap part back across borders
+        if (part->pos.x > DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10) {
+            part->pos.x = -10;
+        } else if (part->pos.x < -10) {
+            part->pos.x = DEFAULT_SCREEN_WIDTH * (ratio / DEFAULT_RATIO) + 10;
+        }
+        if (part->pos.y > DEFAULT_SCREEN_HEIGHT + 10) {
+            part->pos.y = -10;
+        } else if (part->pos.y < -10) {
+            part->pos.y = DEFAULT_SCREEN_HEIGHT + 10;
+        }
+        // friction
+        part->velocity.x *= 0.96;
+        part->velocity.y *= 0.96;
+        part->velocity.x += 0.001;
+        part->velocity.y += 0.001;
+        // bump from ship, asteroids, bullets
+        if (collide_point(part->pos,
+                        player_ship->offsets,
+                        player_ship->offset_count,
+                        player_ship->pos)) {
+            part->velocity.x += player_ship->velocity.x / 6;
+            part->velocity.y += player_ship->velocity.y / 6;
+        }
+        // check if we collided into an asteroid
+        Asteroid *roid_col = request_roid_collision_point(gm, part->pos);
+        if (roid_col) {
+            part->velocity.x += (part->pos.x - roid_col->pos.x) / 20;
+            part->velocity.y += (part->pos.y - roid_col->pos.y) / 20;
+        }
 
-    // TODO: bullets affect our trajectory
-    Bullet *bullet_col = request_bullet_collision_point(gm, part->pos, 6);
-    if (bullet_col) {
-        part->velocity.x += bullet_col->velocity.x / 6;
-        part->velocity.y += bullet_col->velocity.y / 6;
-    }
-    // decay
-    part->life -= 1;
-    float decay = ((float)part->life / part->lifetime);
-    if (decay < 0) {
-        decay = 0;
-    }
-    if (part->size > 1) {
-        part->size -= 0.25;
-    } else {
-        part->size = 1;
-        /* part->size = 1 * decay; */
-    }
-    if (part->col.a > 60) {
-        part->col.a -= 1;
+        // TODO: bullets affect our trajectory
+        Bullet *bullet_col = request_bullet_collision_point(gm, part->pos, 6);
+        if (bullet_col) {
+            part->velocity.x += bullet_col->velocity.x / 6;
+            part->velocity.y += bullet_col->velocity.y / 6;
+        }
+        // decay
+        part->life -= 1;
+        float decay = ((float)part->life / part->lifetime);
+        if (decay < 0) {
+            decay = 0;
+        }
+        if (part->size > 1) {
+            part->size -= 0.25;
+        } else {
+            part->size = 1;
+            /* part->size = 1 * decay; */
+        }
+        if (part->col.a > 100) {
+            part->col.a -= 1;
+        } else if (part->life < 100) {
+            part->col.a = part->life;
+        }
     }
 }
 
 void draw_particle(Particle *part) {
-    Vector2 point = {part->pos.x, part->pos.y};
-    render_point(point, part->col, part->size);
+    if (part->life > 0) {
+        Vector2 point = {part->pos.x, part->pos.y};
+        render_point(point, part->col, part->size);
+    }
 }
 
 void update_particle_list(Particle *head, struct GameManager *gm) {
@@ -146,7 +152,7 @@ void clean_particle_list(Particle **head, Particle **deposit) {
     Particle *current = *head;
 
     while (current) {
-        if (current->life <= 0) {
+        if (current->life < 1) {
             remove_particle_from_list(head, current);
             insert_particle_at_end(deposit, current);
         }
