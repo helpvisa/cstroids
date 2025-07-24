@@ -9,6 +9,7 @@
 __testing__/
 build/
 .vscode/
+packaging/
 
 # binaries and untracked dependencies
 sdl-bin
